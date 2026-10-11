@@ -5,7 +5,7 @@ import { CONTACT_EMAIL as CONFIG_CONTACT_EMAIL } from '@/config'
  * The contact e-mail comes from VITE_CONTACT_EMAIL (see src/config.ts).
  */
 export const OPERATOR_NAME = 'Maximilian Reitsberger'
-export const OPERATOR_ADDRESS = 'Baldhamerstraße 99, 85591 Vaterstetten, Deutschland'
+export const OPERATOR_ADDRESS = 'Baldhamerstraße 99, 85591 Vaterstetten'
 export const CONTACT_EMAIL: string = CONFIG_CONTACT_EMAIL
 /** Shown instead of the e-mail address while VITE_CONTACT_EMAIL is not set. */
 export const CONTACT_EMAIL_PLACEHOLDER = '[E-Mail-Adresse – bitte eintragen]'
