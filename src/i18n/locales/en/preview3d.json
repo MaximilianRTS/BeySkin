@@ -1,0 +1,14 @@
+{
+  "label": "3D preview of the sticker",
+  "loading": "Loading 3D model…",
+  "fallback": "Simplified model",
+  "no_webgl": "3D is not supported by this browser",
+  "spin": "Spin",
+  "reset": "Reset view",
+  "hint": "Drag to rotate, scroll or pinch to zoom. Simplified model, details not to scale.",
+  "title": "3D preview",
+  "enlarge": "Enlarge",
+  "shrink": "Shrink",
+  "speed": "Spin speed",
+  "direction": "Reverse spin direction"
+}

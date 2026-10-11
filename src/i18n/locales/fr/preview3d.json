@@ -1,0 +1,14 @@
+{
+  "label": "Aperçu 3D de l’autocollant",
+  "loading": "Chargement du modèle 3D…",
+  "fallback": "Modèle simplifié",
+  "no_webgl": "La 3D n’est pas prise en charge par ce navigateur",
+  "spin": "Tourner",
+  "reset": "Réinitialiser la vue",
+  "hint": "Glisse pour tourner, molette ou pincement pour zoomer. Modèle simplifié, détails pas à l’échelle.",
+  "title": "Aperçu 3D",
+  "enlarge": "Agrandir",
+  "shrink": "Réduire",
+  "speed": "Vitesse de rotation",
+  "direction": "Inverser le sens de rotation"
+}

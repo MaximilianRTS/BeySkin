@@ -1,0 +1,14 @@
+{
+  "label": "3D-voorbeeld van de sticker",
+  "loading": "3D-model laden…",
+  "fallback": "Vereenvoudigd model",
+  "no_webgl": "3D wordt niet ondersteund door deze browser",
+  "spin": "Draaien",
+  "reset": "Weergave resetten",
+  "hint": "Slepen om te draaien, scrollen of knijpen om te zoomen. Vereenvoudigd model, details niet op schaal.",
+  "title": "3D-voorbeeld",
+  "enlarge": "Vergroten",
+  "shrink": "Verkleinen",
+  "speed": "Draaisnelheid",
+  "direction": "Draairichting omkeren"
+}

@@ -1,0 +1,14 @@
+{
+  "label": "3D-Vorschau des Aufklebers",
+  "loading": "3D-Modell lädt …",
+  "fallback": "Vereinfachtes Modell",
+  "no_webgl": "3D wird von diesem Browser nicht unterstützt",
+  "spin": "Drehen",
+  "reset": "Ansicht zurücksetzen",
+  "hint": "Ziehen zum Drehen, Mausrad oder zwei Finger zum Zoomen. Modell vereinfacht, nicht maßstabsgetreu im Detail.",
+  "title": "3D-Vorschau",
+  "enlarge": "Vergrößern",
+  "shrink": "Verkleinern",
+  "speed": "Drehgeschwindigkeit",
+  "direction": "Drehrichtung umkehren"
+}

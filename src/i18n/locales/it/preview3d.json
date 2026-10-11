@@ -1,0 +1,14 @@
+{
+  "label": "Anteprima 3D dell’adesivo",
+  "loading": "Caricamento del modello 3D…",
+  "fallback": "Modello semplificato",
+  "no_webgl": "Il 3D non è supportato da questo browser",
+  "spin": "Ruota",
+  "reset": "Reimposta vista",
+  "hint": "Trascina per ruotare, rotella o pizzico per zoomare. Modello semplificato, dettagli non in scala.",
+  "title": "Anteprima 3D",
+  "enlarge": "Ingrandisci",
+  "shrink": "Riduci",
+  "speed": "Velocità di rotazione",
+  "direction": "Inverti il senso di rotazione"
+}

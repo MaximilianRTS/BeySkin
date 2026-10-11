@@ -29,3 +29,15 @@ dist-ssr
 # OS generated files
 Thumbs.db
 Desktop.ini
+
+# Reference photos of the real device (contain third-party trademarks) – keep local
+OriginalBilder/
+
+# Local env
+.env.local
+
+# Third-party template sources (only the processed frames in public/frames are used)
+StickerBilder/
+
+# Local tooling
+.claude/

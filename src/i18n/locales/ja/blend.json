@@ -1,0 +1,14 @@
+{
+  "source-over": "通常",
+  "multiply": "乗算",
+  "screen": "スクリーン",
+  "overlay": "オーバーレイ",
+  "darken": "暗くする",
+  "lighten": "明るくする",
+  "color-dodge": "覆い焼き",
+  "color-burn": "焼き込み",
+  "hard-light": "ハードライト",
+  "soft-light": "ソフトライト",
+  "difference": "差の絶対値",
+  "exclusion": "除外"
+}

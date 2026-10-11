@@ -1,27 +1,23 @@
 name: Deploy to GitHub Pages
 
 on:
-  # Trigger on every push to main
   push:
     branches:
       - main
-  # Allow manual trigger from the GitHub Actions tab
   workflow_dispatch:
 
-# Grant write permission to deploy to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Only allow one concurrent deployment
 concurrency:
   group: pages
   cancel-in-progress: true
 
 jobs:
   build:
-    name: Build
+    name: Test & build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -30,17 +26,23 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Build
+      - name: Unit tests
+        run: npm test
+
+      - name: Type check & build
         run: npm run build
         env:
-          # Set the base URL to the repository name for GitHub Pages
-          VITE_BASE_URL: /BeyBattlePass/
+          # Repository name as base path for GitHub Pages
+          VITE_BASE_URL: /${{ github.event.repository.name }}/
+          # Contact e-mail for the legal pages: set as repository variable
+          # (Settings → Secrets and variables → Actions → Variables).
+          VITE_CONTACT_EMAIL: ${{ vars.VITE_CONTACT_EMAIL }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

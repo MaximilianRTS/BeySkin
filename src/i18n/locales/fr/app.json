@@ -1,0 +1,17 @@
+{
+  "nav": "Navigation principale",
+  "editor": "Éditeur",
+  "imprint": "Mentions légales",
+  "privacy": "Confidentialité",
+  "terms": "Conditions d’utilisation",
+  "notice": "Mentions des droits",
+  "language": "Langue",
+  "theme": "Thème",
+  "theme_system": "Système",
+  "theme_dark": "Sombre",
+  "theme_light": "Clair",
+  "disclaimer": "{app} est un projet de fan gratuit et non officiel, sans lien avec Takara Tomy, Hasbro ou d-rights. BEYBLADE est une marque appartenant à ses détenteurs respectifs.",
+  "theme_toggle": "Changer de thème (actuel : {mode})",
+  "legal_note": "Les textes juridiques sont disponibles en allemand et en anglais.",
+  "legal_nav": "Mentions légales"
+}

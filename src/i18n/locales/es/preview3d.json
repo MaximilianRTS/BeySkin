@@ -1,0 +1,14 @@
+{
+  "label": "Vista previa 3D de la pegatina",
+  "loading": "Cargando modelo 3D…",
+  "fallback": "Modelo simplificado",
+  "no_webgl": "Este navegador no admite 3D",
+  "spin": "Girar",
+  "reset": "Restablecer vista",
+  "hint": "Arrastra para girar; usa la rueda del ratón o pellizca con dos dedos para acercar. Modelo simplificado: los detalles no están a escala.",
+  "title": "Vista previa 3D",
+  "enlarge": "Agrandar",
+  "shrink": "Reducir",
+  "speed": "Velocidad de giro",
+  "direction": "Invertir el sentido de giro"
+}

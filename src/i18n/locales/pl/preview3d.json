@@ -1,0 +1,14 @@
+{
+  "label": "Podgląd naklejki w 3D",
+  "loading": "Wczytywanie modelu 3D…",
+  "fallback": "Uproszczony model",
+  "no_webgl": "Ta przeglądarka nie obsługuje 3D",
+  "spin": "Obróć",
+  "reset": "Resetuj widok",
+  "hint": "Przeciągnij, aby obrócić, kółkiem myszy lub dwoma palcami przybliż. Model uproszczony, szczegóły nie w skali.",
+  "title": "Podgląd 3D",
+  "enlarge": "Powiększ",
+  "shrink": "Pomniejsz",
+  "speed": "Prędkość obrotu",
+  "direction": "Odwróć kierunek obrotu"
+}

@@ -1,31 +1,45 @@
-<template>
-  <div id="app" class="battlepass-app">
-    <main class="battlepass-main">
-      <EditorView />
-    </main>
-    <AppFooter />
-  </div>
-</template>
+<script setup lang="ts">
+import { onMounted, watch } from 'vue'
+import AppHeader from '@/components/common/AppHeader.vue'
+import AppFooter from '@/components/common/AppFooter.vue'
+import ToastHost from '@/components/common/ToastHost.vue'
+import ConfirmHost from '@/components/common/ConfirmHost.vue'
+import { useEditorStore } from '@/stores/editor'
+import { useLibraryStore } from '@/stores/library'
 
-<script setup>
-import EditorView from './views/EditorView.vue'
-import AppFooter from './components/AppFooter.vue'
+const editor = useEditorStore()
+const library = useLibraryStore()
+
+onMounted(async () => {
+  await Promise.all([editor.init(), library.init()])
+  // Autosave: the design being edited is mirrored into "My designs" (debounced).
+  let timer: ReturnType<typeof setTimeout> | undefined
+  watch(
+    () => editor.design,
+    (d) => {
+      clearTimeout(timer)
+      timer = setTimeout(() => library.upsert(d), 400)
+    },
+    { deep: true, immediate: true },
+  )
+})
 </script>
 
-<style scoped>
-.battlepass-app {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  color: var(--color-text);
-  background: var(--color-bg);
-}
+<template>
+  <AppHeader />
+  <main class="app-main">
+    <RouterView />
+  </main>
+  <AppFooter />
+  <ToastHost />
+  <ConfirmHost />
+</template>
 
-.battlepass-main {
+<style scoped>
+.app-main {
   flex: 1;
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
+  min-height: 0;
 }
 </style>

@@ -1,0 +1,14 @@
+{
+  "label": "Pré-visualização 3D do adesivo",
+  "loading": "Carregando modelo 3D…",
+  "fallback": "Modelo simplificado",
+  "no_webgl": "Este navegador não é compatível com 3D",
+  "spin": "Girar",
+  "reset": "Redefinir visualização",
+  "hint": "Arraste para girar, role a roda do mouse ou use dois dedos para dar zoom. Modelo simplificado, detalhes fora de escala.",
+  "title": "Pré-visualização 3D",
+  "enlarge": "Ampliar",
+  "shrink": "Reduzir",
+  "speed": "Velocidade de giro",
+  "direction": "Inverter o sentido do giro"
+}

@@ -1,36 +1,45 @@
 {
-    "name": "bey-battle-pass",
-    "version": "1.0.0",
-    "description": "Create and download custom Beyblade Battle Pass cutouts as printable PDFs. Upload images, position them on templates, and export high-quality prints.",
-    "author": "Maximilian Reitsberger (Maximilian RTS)",
-    "license": "MIT",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/MaximilianRTS/BeyBattlePass"
-    },
-    "keywords": [
-        "beyblade",
-        "battle-pass",
-        "vue3",
-        "pdf-generator",
-        "print-template"
-    ],
-    "type": "module",
-    "engines": {
-        "node": ">=18.0.0"
-    },
-    "scripts": {
-        "dev": "vite",
-        "build": "vite build",
-        "preview": "vite preview"
-    },
-    "dependencies": {
-        "jspdf": "^4.1.0",
-        "vue": "^3.5.24",
-        "vue-i18n": "^9.14.5"
-    },
-    "devDependencies": {
-        "@vitejs/plugin-vue": "^6.0.1",
-        "vite": "^7.2.4"
-    }
+  "name": "beyskin",
+  "version": "2.0.0",
+  "private": true,
+  "description": "BeySkin – free, unofficial sticker & label editor for spinning-top battle gear. Design, preview in 3D, print.",
+  "author": "Maximilian Reitsberger (Maximilian RTS)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MaximilianRTS/BeySkin"
+  },
+  "type": "module",
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "vue-tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@fontsource/anton": "^5.3.0",
+    "@fontsource/bangers": "^5.3.0",
+    "@fontsource/russo-one": "^5.3.0",
+    "idb-keyval": "^6.3.0",
+    "jspdf": "^4.2.1",
+    "pinia": "^4.0.3",
+    "three": "^0.186.1",
+    "vue": "^3.5.43",
+    "vue-i18n": "^11.4.14",
+    "vue-router": "^5.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "@types/three": "^0.186.0",
+    "@vitejs/plugin-vue": "^6.0.10",
+    "jsdom": "^30.1.2",
+    "typescript": "~5.9.3",
+    "vite": "^8.3.4",
+    "vitest": "^5.0.3",
+    "vue-tsc": "^3.3.13"
+  }
 }

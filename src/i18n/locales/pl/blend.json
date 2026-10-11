@@ -1,0 +1,14 @@
+{
+  "source-over": "Normalny",
+  "multiply": "Mnożenie",
+  "screen": "Ekran",
+  "overlay": "Nakładka",
+  "darken": "Przyciemnienie",
+  "lighten": "Rozjaśnienie",
+  "color-dodge": "Rozjaśnienie koloru",
+  "color-burn": "Przyciemnienie koloru",
+  "hard-light": "Twarde światło",
+  "soft-light": "Miękkie światło",
+  "difference": "Różnica",
+  "exclusion": "Wykluczenie"
+}
