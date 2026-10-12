@@ -64,12 +64,26 @@ async function remove(a: AssetMeta) {
   await deleteAsset(a.id)
   toast(t('editor.image_deleted'), 'success')
 }
+
+async function removeAll() {
+  const list = [...assets.value]
+  const used = list.filter((a) => inUse.value.has(a.id)).length
+  const text = t('editor.delete_all_images_confirm', { n: list.length }) + (used ? ` ${t('editor.delete_all_images_in_use', { used })}` : '')
+  if (!(await confirmDialog(text, { danger: true, confirmLabel: t('editor.delete_all_images') }))) return
+  for (const a of list) await deleteAsset(a.id)
+  toast(t('editor.images_deleted', { n: list.length }), 'success')
+}
 </script>
 
 <template>
   <div class="image-picker card" :class="{ dragging }" role="dialog" :aria-label="t('editor.my_images')" @keydown.esc="emit('close')">
     <div class="head">
-      <span class="title">{{ t('editor.my_images') }}</span>
+      <div class="title-row">
+        <span class="title">{{ t('editor.my_images') }}</span>
+        <button v-if="assets.length" class="btn btn-sm btn-ghost clear" @click="removeAll">
+          <Icon name="trash" :size="13" /> {{ t('editor.delete_all_images') }}
+        </button>
+      </div>
       <span class="muted hint">{{ t('editor.my_images_hint') }}</span>
     </div>
     <ul class="grid">
@@ -121,6 +135,18 @@ async function remove(a: AssetMeta) {
   flex-direction: column;
   gap: 2px;
   margin-bottom: 10px;
+}
+.title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.clear {
+  min-height: 24px;
+  padding: 2px 8px;
+  font-size: 12px;
+  color: var(--danger, #e5484d);
 }
 .title {
   font-size: 11px;

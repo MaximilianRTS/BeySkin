@@ -124,5 +124,9 @@
   "upload_new": "Upload new image",
   "save": "Save",
   "hide_outside": "Hide outside",
-  "hide_outside_hint": "Hide everything outside the cut line – shows only what ends up on the sticker."
+  "hide_outside_hint": "Hide everything outside the cut line – shows only what ends up on the sticker.",
+  "delete_all_images": "Delete all",
+  "delete_all_images_confirm": "Delete all {n} images from “My images”? This cannot be undone.",
+  "delete_all_images_in_use": "{used} of them are used in designs – empty placeholders remain there.",
+  "images_deleted": "{n} images deleted."
 }

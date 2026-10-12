@@ -38,6 +38,7 @@ export const TEMPLATES: StickerTemplate[] = [
     // Tournament name badge / player card: ISO/IEC 7810 ID-1 (credit card size),
     // 85.60 x 53.98 mm with 3.18 mm corners – a standard, so it counts as measured.
     id: 'player_card',
+    hidden: true,
     i18nKey: 'player_card',
     category: 'accessories',
     widthMm: 85.6,
@@ -51,6 +52,7 @@ export const TEMPLATES: StickerTemplate[] = [
     // ESTIMATE, not measured: label for the flat side of a Beyblade X string launcher.
     // Assumed 42 x 16 mm with 3 mm corners; replace once someone measures a real launcher.
     id: 'launcher_x',
+    hidden: true,
     i18nKey: 'launcher_x',
     category: 'accessories',
     widthMm: 42,
@@ -64,6 +66,7 @@ export const TEMPLATES: StickerTemplate[] = [
     // ESTIMATE, not measured: lid label for a Beyblade X deck case.
     // Assumed 60 x 35 mm with 3 mm corners; replace once someone measures a real case.
     id: 'deck_case',
+    hidden: true,
     i18nKey: 'deck_case',
     category: 'accessories',
     widthMm: 60,
@@ -76,6 +79,7 @@ export const TEMPLATES: StickerTemplate[] = [
   {
     // Generic round label, common punch / sticker sheet size.
     id: 'round_25',
+    hidden: true,
     i18nKey: 'round_25',
     category: 'generic',
     widthMm: 25,
@@ -87,6 +91,7 @@ export const TEMPLATES: StickerTemplate[] = [
   },
   {
     id: 'round_40',
+    hidden: true,
     i18nKey: 'round_40',
     category: 'generic',
     widthMm: 40,
@@ -101,6 +106,9 @@ export const TEMPLATES: StickerTemplate[] = [
 export const DEFAULT_TEMPLATE_ID = 'battlepass'
 
 /** Display order of the categories in the template picker. */
+/** Templates offered in the picker, transfer menu and printer test page. */
+export const VISIBLE_TEMPLATES = TEMPLATES.filter((t) => !t.hidden)
+
 export const CATEGORY_ORDER: TemplateCategory[] = ['battlepass', 'bey', 'accessories', 'generic', 'custom']
 
 /** Custom templates are built on demand; the cache keeps one object per id. */

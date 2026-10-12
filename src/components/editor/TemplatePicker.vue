@@ -24,7 +24,11 @@ const { t, locale } = useI18n()
 const store = useEditorStore()
 
 const groups = computed(() =>
-  CATEGORY_ORDER.map((cat) => ({ cat, items: TEMPLATES.filter((tp) => tp.category === cat) })).filter((g) => g.items.length),
+  CATEGORY_ORDER.map((cat) => ({
+    cat,
+    // A hidden template stays listed while a design that uses it is open.
+    items: TEMPLATES.filter((tp) => tp.category === cat && (!tp.hidden || tp.id === props.modelValue)),
+  })).filter((g) => g.items.length),
 )
 
 function points(tp: StickerTemplate) {
@@ -105,9 +109,11 @@ const THUMB_PX = 240
 const examplesOpen = ref(store.design.layers.length === 0)
 const showAll = ref(false)
 const category = computed(() => getTemplate(props.modelValue).category)
-const matching = computed(() => EXAMPLES.filter((ex) => getTemplate(ex.templateId).category === category.value))
-const shownExamples = computed(() => (showAll.value || !matching.value.length ? EXAMPLES : matching.value))
-const canToggleAll = computed(() => matching.value.length > 0 && matching.value.length < EXAMPLES.length)
+/** Examples for templates that are hidden for now are not offered. */
+const available = EXAMPLES.filter((ex) => !getTemplate(ex.templateId).hidden)
+const matching = computed(() => available.filter((ex) => getTemplate(ex.templateId).category === category.value))
+const shownExamples = computed(() => (showAll.value || !matching.value.length ? available : matching.value))
+const canToggleAll = computed(() => matching.value.length > 0 && matching.value.length < available.length)
 
 const exampleTexts = () => ({ name: t('templates.example_text_name'), team: t('templates.example_text_team') })
 const isWide = (ex: ExampleDef) => {

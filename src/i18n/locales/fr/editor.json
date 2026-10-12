@@ -124,5 +124,9 @@
   "upload_new": "Importer une image",
   "save": "Enregistrer",
   "hide_outside": "Masquer l’extérieur",
-  "hide_outside_hint": "Masque tout ce qui dépasse de la ligne de coupe – tu ne vois que ce qui sera sur le sticker."
+  "hide_outside_hint": "Masque tout ce qui dépasse de la ligne de coupe – tu ne vois que ce qui sera sur le sticker.",
+  "delete_all_images": "Tout supprimer",
+  "delete_all_images_confirm": "Supprimer les {n} images de « Mes images » ? Action irréversible.",
+  "delete_all_images_in_use": "{used} sont utilisées dans des designs – des emplacements vides y resteront.",
+  "images_deleted": "{n} images supprimées."
 }

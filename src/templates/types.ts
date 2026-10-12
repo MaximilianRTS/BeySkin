@@ -30,6 +30,8 @@ export interface StickerTemplate {
    * The UI shows a hint so users print a test sheet first.
    */
   measured: boolean
+  /** Not offered in the UI for now; designs and share links using it still open. */
+  hidden?: boolean
   previewModel: PreviewModel
   /** Recommended safe margin inside the cut line in mm (consumers default to 1.5). */
   safeMm?: number

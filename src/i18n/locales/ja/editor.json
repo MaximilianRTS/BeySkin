@@ -124,5 +124,9 @@
   "upload_new": "新しい画像をアップロード",
   "save": "保存",
   "hide_outside": "外側をかくす",
-  "hide_outside_hint": "カットラインの外側をかくして、ステッカーに入る部分だけを表示します。"
+  "hide_outside_hint": "カットラインの外側をかくして、ステッカーに入る部分だけを表示します。",
+  "delete_all_images": "すべて削除",
+  "delete_all_images_confirm": "「マイ画像」の {n} 枚の画像をすべて削除しますか？元に戻せません。",
+  "delete_all_images_in_use": "そのうち {used} 枚はデザインで使用中です。デザインには空のプレースホルダーが残ります。",
+  "images_deleted": "{n} 枚の画像を削除しました。"
 }

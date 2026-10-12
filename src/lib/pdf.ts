@@ -1,7 +1,7 @@
 import type { Design } from './model'
 import { renderDesignCanvas } from './render'
 import { layoutSheet, PAPER_SIZES, type PaperSize } from './sheet'
-import { getTemplate, TEMPLATES, type Point, type StickerTemplate } from '@/templates'
+import { getTemplate, VISIBLE_TEMPLATES, type Point, type StickerTemplate } from '@/templates'
 
 export interface PrintOptions {
   paper: PaperSize
@@ -387,7 +387,7 @@ export async function generateTestPagePdf(o: TestPageOptions): Promise<Blob> {
     const GAP = 6
     let x = MARGIN
     let rowH = 0
-    for (const t of TEMPLATES.filter((tp) => !tp.custom)) {
+    for (const t of VISIBLE_TEMPLATES.filter((tp) => !tp.custom)) {
       const w = t.widthMm * o.scaleX
       const h = t.heightMm * o.scaleY
       const caption = `${o.templateName(t)} · ${+t.widthMm.toFixed(1)} × ${+t.heightMm.toFixed(1)} mm`

@@ -124,5 +124,9 @@
   "upload_new": "Nieuwe afbeelding uploaden",
   "save": "Opslaan",
   "hide_outside": "Buiten verbergen",
-  "hide_outside_hint": "Verbergt alles buiten de snijlijn – je ziet alleen wat op de sticker komt."
+  "hide_outside_hint": "Verbergt alles buiten de snijlijn – je ziet alleen wat op de sticker komt.",
+  "delete_all_images": "Alles verwijderen",
+  "delete_all_images_confirm": "Alle {n} afbeeldingen uit ‘Mijn afbeeldingen’ verwijderen? Dit kan niet ongedaan worden gemaakt.",
+  "delete_all_images_in_use": "{used} daarvan worden in ontwerpen gebruikt – daar blijven lege plaatshouders over.",
+  "images_deleted": "{n} afbeeldingen verwijderd."
 }

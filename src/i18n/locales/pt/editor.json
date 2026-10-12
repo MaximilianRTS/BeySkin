@@ -124,5 +124,9 @@
   "upload_new": "Enviar nova imagem",
   "save": "Salvar",
   "hide_outside": "Ocultar fora",
-  "hide_outside_hint": "Oculta tudo fora da linha de corte – mostra só o que vai para o sticker."
+  "hide_outside_hint": "Oculta tudo fora da linha de corte – mostra só o que vai para o sticker.",
+  "delete_all_images": "Apagar tudo",
+  "delete_all_images_confirm": "Apagar todas as {n} imagens de «As minhas imagens»? Não é possível desfazer.",
+  "delete_all_images_in_use": "{used} estão a ser usadas em designs – lá ficarão marcadores vazios.",
+  "images_deleted": "{n} imagens apagadas."
 }

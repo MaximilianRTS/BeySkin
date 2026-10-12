@@ -124,5 +124,9 @@
   "upload_new": "Carica nuova immagine",
   "save": "Salva",
   "hide_outside": "Nascondi esterno",
-  "hide_outside_hint": "Nasconde tutto fuori dalla linea di taglio: vedi solo ciò che finirà sullo sticker."
+  "hide_outside_hint": "Nasconde tutto fuori dalla linea di taglio: vedi solo ciò che finirà sullo sticker.",
+  "delete_all_images": "Elimina tutto",
+  "delete_all_images_confirm": "Eliminare tutte le {n} immagini da «Le mie immagini»? L’azione è irreversibile.",
+  "delete_all_images_in_use": "{used} sono usate nei design: lì resteranno segnaposto vuoti.",
+  "images_deleted": "{n} immagini eliminate."
 }

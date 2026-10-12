@@ -15,7 +15,7 @@ const LibraryDialog = defineAsyncComponent(() => import('@/components/editor/Lib
 import ImagePicker from '@/components/editor/ImagePicker.vue'
 import { ASSET_DRAG_TYPE, listAssets } from '@/lib/assets'
 import { confirmDialog } from '@/lib/confirm'
-import { templateName, TEMPLATES } from '@/templates'
+import { templateName, VISIBLE_TEMPLATES } from '@/templates'
 import Icon from '@/components/common/Icon.vue'
 import OnboardingTour from '@/components/common/OnboardingTour.vue'
 import type { FrameDef, PatternId, ShapeDef } from '@/lib/library'
@@ -169,7 +169,7 @@ function onPaste(e: ClipboardEvent) {
 }
 
 // ---------- transfer to another template ----------
-const transferTargets = computed(() => TEMPLATES.filter((tp) => tp.id !== store.design.templateId))
+const transferTargets = computed(() => VISIBLE_TEMPLATES.filter((tp) => tp.id !== store.design.templateId))
 
 async function transfer(e: Event) {
   const select = e.target as HTMLSelectElement

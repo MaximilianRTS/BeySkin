@@ -124,5 +124,9 @@
   "upload_new": "Subir imagen nueva",
   "save": "Guardar",
   "hide_outside": "Ocultar exterior",
-  "hide_outside_hint": "Oculta todo lo que queda fuera de la línea de corte: solo ves lo que irá en el sticker."
+  "hide_outside_hint": "Oculta todo lo que queda fuera de la línea de corte: solo ves lo que irá en el sticker.",
+  "delete_all_images": "Borrar todo",
+  "delete_all_images_confirm": "¿Borrar las {n} imágenes de «Mis imágenes»? No se puede deshacer.",
+  "delete_all_images_in_use": "{used} se usan en diseños; allí quedarán marcadores vacíos.",
+  "images_deleted": "{n} imágenes borradas."
 }

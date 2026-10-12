@@ -124,5 +124,9 @@
   "upload_new": "Prześlij nowy obraz",
   "save": "Zapisz",
   "hide_outside": "Ukryj na zewnątrz",
-  "hide_outside_hint": "Ukrywa wszystko poza linią cięcia – widzisz tylko to, co trafi na naklejkę."
+  "hide_outside_hint": "Ukrywa wszystko poza linią cięcia – widzisz tylko to, co trafi na naklejkę.",
+  "delete_all_images": "Usuń wszystkie",
+  "delete_all_images_confirm": "Usunąć wszystkie obrazy ({n}) z „Moich obrazów”? Tej operacji nie można cofnąć.",
+  "delete_all_images_in_use": "{used} z nich jest używanych w projektach – zostaną tam puste miejsca.",
+  "images_deleted": "Usunięto obrazy: {n}."
 }

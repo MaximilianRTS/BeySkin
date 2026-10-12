@@ -124,5 +124,9 @@
   "upload_new": "Neues Bild hochladen",
   "save": "Speichern",
   "hide_outside": "Außen ausblenden",
-  "hide_outside_hint": "Alles außerhalb der Schnittlinie ausblenden – zeigt nur, was auf dem Sticker landet."
+  "hide_outside_hint": "Alles außerhalb der Schnittlinie ausblenden – zeigt nur, was auf dem Sticker landet.",
+  "delete_all_images": "Alle löschen",
+  "delete_all_images_confirm": "Alle {n} Bilder aus „Meine Bilder“ löschen? Das kann nicht rückgängig gemacht werden.",
+  "delete_all_images_in_use": "{used} davon werden in Designs verwendet – dort bleiben leere Platzhalter.",
+  "images_deleted": "{n} Bilder gelöscht."
 }
