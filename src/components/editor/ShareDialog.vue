@@ -7,7 +7,8 @@ import { exportPng } from '@/lib/export'
 import { projectFileBlob } from '@/lib/projectFile'
 import { safeFilename, saveBlob } from '@/lib/download'
 import { toast } from '@/lib/toast'
-import { getTemplate } from '@/templates'
+import { makeQr, qrPng, qrSvg, type QrCode } from '@/lib/qr'
+import { getTemplate, templateName } from '@/templates'
 import Icon from '@/components/common/Icon.vue'
 
 const props = defineProps<{ design: Design }>()
@@ -20,7 +21,7 @@ const images = computed(() => countPlaceholders(props.design))
 const tooLong = computed(() => link.value.length > COMFORTABLE_LINK_LENGTH)
 const canShareFiles = typeof navigator !== 'undefined' && 'canShare' in navigator
 const canShareLink = typeof navigator !== 'undefined' && 'share' in navigator
-const baseName = computed(() => safeFilename(props.design.name || t(`templates.${getTemplate(props.design.templateId).i18nKey}`)))
+const baseName = computed(() => safeFilename(props.design.name || templateName(t, getTemplate(props.design.templateId))))
 
 onMounted(async () => {
   try {
@@ -74,6 +75,31 @@ async function shareFile(kind: 'png' | 'project') {
   }
 }
 
+// ---------- QR code (scan the link with a phone) ----------
+const showQr = ref(false)
+/** Above this length the code gets so dense that phones struggle to read it from a screen. */
+const QR_DENSE_LENGTH = 1200
+const qr = computed<QrCode | null>(() => {
+  if (!showQr.value || !link.value) return null
+  try {
+    return makeQr(link.value)
+  } catch {
+    return null // does not fit into a QR code at all
+  }
+})
+
+async function downloadQr(kind: 'png' | 'svg') {
+  if (!qr.value) return
+  const name = `${baseName.value}-qr.${kind}`
+  try {
+    if (kind === 'svg') saveBlob(new Blob([qrSvg(qr.value)], { type: 'image/svg+xml' }), name)
+    else saveBlob(await qrPng(qr.value), name)
+  } catch (err) {
+    console.error(err)
+    toast(t('editor.export_failed'), 'error')
+  }
+}
+
 const dialog = ref<HTMLDivElement>()
 onMounted(() => dialog.value?.focus())
 </script>
@@ -91,11 +117,35 @@ onMounted(() => dialog.value?.focus())
           <input id="share-link" class="input" readonly :value="link" :aria-label="t('share.link_title')" @focus="($event.target as HTMLInputElement).select()" />
           <button class="btn btn-primary" :disabled="!link" @click="copyLink"><Icon name="copy" /> {{ t('share.copy') }}</button>
         </div>
-        <div class="row meta">
+        <div class="row meta wrap">
           <span class="muted small">{{ t('share.length', { n: link.length }) }}</span>
           <span v-if="tooLong" class="badge badge-warning">{{ t('share.too_long') }}</span>
           <span class="spacer" />
+          <button class="btn btn-sm" :class="{ active: showQr }" :aria-pressed="showQr" :disabled="!link" @click="showQr = !showQr">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h3v3h-3z M20 14v1 M14 20h1 M18 18h3v3h-3z" />
+            </svg>
+            {{ t('share.qr') }}
+          </button>
           <button v-if="canShareLink" class="btn btn-sm" :disabled="!link" @click="shareLink">{{ t('share.share_link') }}</button>
+        </div>
+        <div v-if="showQr" class="qr-block">
+          <template v-if="qr">
+            <!-- Always black on white with a quiet zone, also in dark mode, so cameras can read it. -->
+            <svg class="qr" :viewBox="`0 0 ${qr.size} ${qr.size}`" shape-rendering="crispEdges" role="img" :aria-label="t('share.qr_alt')">
+              <rect :width="qr.size" :height="qr.size" fill="#fff" />
+              <path :d="qr.path" fill="#000" />
+            </svg>
+            <div class="qr-side">
+              <p class="muted small">{{ t('share.qr_hint') }}</p>
+              <p v-if="link.length > QR_DENSE_LENGTH" class="notice small"><Icon name="alert" :size="14" /> {{ t('share.qr_dense') }}</p>
+              <div class="row wrap">
+                <button class="btn btn-sm" @click="downloadQr('png')"><Icon name="download" :size="14" /> PNG</button>
+                <button class="btn btn-sm" @click="downloadQr('svg')"><Icon name="download" :size="14" /> SVG</button>
+              </div>
+            </div>
+          </template>
+          <p v-else class="notice small"><Icon name="alert" :size="14" /> {{ t('share.qr_too_long') }}</p>
         </div>
         <p class="muted tiny">{{ t('share.privacy') }}</p>
       </section>
@@ -150,5 +200,23 @@ h3 {
 }
 .wrap {
   flex-wrap: wrap;
+}
+.qr-block {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+  margin-top: 10px;
+}
+.qr {
+  display: block;
+  width: min(220px, 100%);
+  height: auto;
+  border-radius: 8px;
+  background: #fff;
+}
+.qr-side {
+  flex: 1 1 180px;
+  min-width: 0;
 }
 </style>

@@ -1,6 +1,6 @@
 import { blobToDataUrl, dataUrlToBlob, getAssetBlob, importImage } from './assets'
-import { BLEND_MODES, newDesign, uid, type BlendMode, type Design, type ImageLayer, type Layer } from './model'
-import { TEMPLATES } from '@/templates'
+import { BLEND_MODES, IMAGE_ADJUST_DEFAULTS, newDesign, TEXT_EFFECT_DEFAULTS, uid, type BlendMode, type Design, type ImageLayer, type Layer } from './model'
+import { isTemplateId } from '@/templates'
 
 /**
  * Portable project file: designs plus embedded image assets (base64).
@@ -41,6 +41,8 @@ const num = (v: unknown, fallback: number, min = -1e4, max = 1e4) =>
 const str = (v: unknown, fallback: string, maxLen = 500) => (typeof v === 'string' ? v.slice(0, maxLen) : fallback)
 const bool = (v: unknown, fallback: boolean) => (typeof v === 'boolean' ? v : fallback)
 const color = (v: unknown, fallback: string) => (typeof v === 'string' && /^#[0-9a-fA-F]{3,8}$/.test(v) ? v : fallback)
+/** Optional colour: null (= effect off) unless a valid hex colour is given. */
+const optColor = (v: unknown): string | null => (typeof v === 'string' && /^#[0-9a-fA-F]{3,8}$/.test(v) ? v : null)
 const blend = (v: unknown): BlendMode => (BLEND_MODES.includes(v as BlendMode) ? (v as BlendMode) : 'source-over')
 
 export interface SanitizeOptions {
@@ -63,6 +65,7 @@ function sanitizeLayer(raw: Record<string, unknown>, knownAssets: Set<string>, o
     rotation: num(raw.rotation, 0, -3600, 3600),
     flipX: bool(raw.flipX, false),
     flipY: bool(raw.flipY, false),
+    groupId: typeof raw.groupId === 'string' && /^[A-Za-z0-9-]{1,40}$/.test(raw.groupId) ? raw.groupId : null,
   }
   switch (raw.type) {
     case 'image': {
@@ -79,6 +82,14 @@ function sanitizeLayer(raw: Record<string, unknown>, knownAssets: Set<string>, o
         naturalHeight: num(raw.naturalHeight, 1, 1, 20000),
         width: num(raw.width, 50, 0.1, 5000),
         mask: raw.mask === 'circle' || raw.mask === 'frame' ? raw.mask : null,
+        brightness: num(raw.brightness, IMAGE_ADJUST_DEFAULTS.brightness, 0, 200),
+        contrast: num(raw.contrast, IMAGE_ADJUST_DEFAULTS.contrast, 0, 200),
+        saturation: num(raw.saturation, IMAGE_ADJUST_DEFAULTS.saturation, 0, 200),
+        hue: num(raw.hue, IMAGE_ADJUST_DEFAULTS.hue, -180, 180),
+        grayscale: num(raw.grayscale, IMAGE_ADJUST_DEFAULTS.grayscale, 0, 100),
+        keyColor: optColor(raw.keyColor),
+        keyTolerance: num(raw.keyTolerance, IMAGE_ADJUST_DEFAULTS.keyTolerance, 0, 100),
+        keySoftness: num(raw.keySoftness, IMAGE_ADJUST_DEFAULTS.keySoftness, 0, 100),
       }
     }
     case 'text':
@@ -94,6 +105,14 @@ function sanitizeLayer(raw: Record<string, unknown>, knownAssets: Set<string>, o
         strokeColor: color(raw.strokeColor, '#000000'),
         strokeWidth: num(raw.strokeWidth, 0, 0, 20),
         align: raw.align === 'left' || raw.align === 'right' ? raw.align : 'center',
+        letterSpacing: num(raw.letterSpacing, TEXT_EFFECT_DEFAULTS.letterSpacing, -10, 50),
+        curve: num(raw.curve, TEXT_EFFECT_DEFAULTS.curve, -360, 360),
+        shadowColor: optColor(raw.shadowColor),
+        shadowX: num(raw.shadowX, TEXT_EFFECT_DEFAULTS.shadowX, -50, 50),
+        shadowY: num(raw.shadowY, TEXT_EFFECT_DEFAULTS.shadowY, -50, 50),
+        shadowBlur: num(raw.shadowBlur, TEXT_EFFECT_DEFAULTS.shadowBlur, 0, 20),
+        glowColor: optColor(raw.glowColor),
+        glowSize: num(raw.glowSize, TEXT_EFFECT_DEFAULTS.glowSize, 0, 20),
       }
     case 'fill':
       return {
@@ -141,7 +160,7 @@ function sanitizeLayer(raw: Record<string, unknown>, knownAssets: Set<string>, o
 }
 
 export function sanitizeDesign(raw: Record<string, unknown>, knownAssets: Set<string>, opts: SanitizeOptions = {}): Design {
-  const templateId = TEMPLATES.some((t) => t.id === raw.templateId) ? (raw.templateId as string) : 'battlepass'
+  const templateId = isTemplateId(raw.templateId) ? raw.templateId : 'battlepass'
   const d = newDesign(templateId, str(raw.name, '', 80))
   const layers = Array.isArray(raw.layers) ? raw.layers : []
   d.layers = layers

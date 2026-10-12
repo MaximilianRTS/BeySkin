@@ -1,4 +1,4 @@
-import type { Design, Layer } from './model'
+import { IMAGE_ADJUST_DEFAULTS, TEXT_EFFECT_DEFAULTS, type Design, type Layer } from './model'
 import { sanitizeDesign } from './projectFile'
 
 /**
@@ -13,6 +13,7 @@ const VERSION = '1'
 export const COMFORTABLE_LINK_LENGTH = 2000
 const MAX_DATA_LENGTH = 200_000
 
+/** Values left out of links; decoding restores them (sanitizeLayer fills the type-specific rest). */
 const LAYER_DEFAULTS: Partial<Record<string, unknown>> = {
   visible: true,
   locked: false,
@@ -21,14 +22,26 @@ const LAYER_DEFAULTS: Partial<Record<string, unknown>> = {
   rotation: 0,
   flipX: false,
   flipY: false,
+  groupId: null,
+  ...TEXT_EFFECT_DEFAULTS,
+  ...IMAGE_ADJUST_DEFAULTS,
+}
+
+/** Settings that only matter while their effect is on. */
+const EFFECT_PARAMS: Record<string, string[]> = {
+  shadowColor: ['shadowX', 'shadowY', 'shadowBlur'],
+  glowColor: ['glowSize'],
+  keyColor: ['keyTolerance', 'keySoftness'],
 }
 
 const round = (v: number) => Math.round(v * 100) / 100
 
 function compactLayer(layer: Layer): Record<string, unknown> {
   const out: Record<string, unknown> = {}
+  const raw = layer as unknown as Record<string, unknown>
+  const unused = new Set(Object.entries(EFFECT_PARAMS).flatMap(([k, params]) => (raw[k] ? [] : params)))
   for (const [key, value] of Object.entries(layer)) {
-    if (key === 'id') continue
+    if (key === 'id' || unused.has(key)) continue
     if (key === 'assetId') {
       out.assetId = ''
       continue

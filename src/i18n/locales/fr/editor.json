@@ -25,7 +25,7 @@
   "empty_hint": "Dépose une image ici, colle-la (Ctrl+V) ou clique sur « Image » ci-dessus",
   "drop_here": "Dépose les images ici",
   "import_failed": "{n} fichier(s) n’ont pas pu être lu(s).",
-  "shortcuts": "Astuces : les zones transparentes laissent passer le clic · Alt+clic = choisir le calque dessous · double-clic sur un texte pour le modifier · flèches pour déplacer (Maj = 5 mm) · [ ] = reculer/avancer · Ctrl+C/V copier/coller · Ctrl+Z/Y · Ctrl+D dupliquer · Suppr effacer · Ctrl+S enregistrer · Espace + glisser = déplacer la vue",
+  "shortcuts": "Astuces : les zones transparentes laissent passer le clic · Maj/Ctrl+clic = ajouter à/retirer de la sélection · Maj+glisser sur un espace vide = sélectionner une zone · Ctrl+A tout sélectionner · un clic sélectionne tout le groupe, double-clic = un seul élément · Alt+clic = calque dessous / un seul élément · double-clic sur un texte pour le modifier · flèches pour déplacer (Maj = 5 mm) · [ ] = reculer/avancer · Ctrl+C/V copier/coller · Ctrl+G grouper · Ctrl+Maj+G dissocier · Ctrl+Z/Y · Ctrl+D dupliquer · Suppr effacer · Ctrl+S enregistrer · Espace + glisser = déplacer la vue · Alt en glissant = sans magnétisme",
   "no_layers": "Pas encore de calques. Ajoute une image, un texte ou un fond.",
   "rename": "Renommer",
   "rename_hint": "Double-clique pour renommer",

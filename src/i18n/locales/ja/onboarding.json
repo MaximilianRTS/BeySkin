@@ -1,0 +1,13 @@
+{
+  "progress": "ステップ {n} / {total}",
+  "step_template_title": "テンプレートを選ぶ",
+  "step_template_text": "まず何をデザインするか選びます – Battle Pass、Gear Chip など。サイズとカットラインは自動で合わせられます。スマホでは「{tab}」タブにあります。",
+  "step_add_title": "画像とテキストを追加",
+  "step_add_text": "「{image}」で写真やロゴをアップロード。その隣のボタンでテキスト、ステッカー、塗りつぶしを追加できます。ラベル上で直接移動・回転・拡大縮小できます。",
+  "step_print_title": "印刷とエクスポート",
+  "step_print_text": "すべて自動で「{library}」に保存されます。そこで枚数を決めて、印刷シートを PDF で作成します。「{export}」からは単体の PNG やカットラインの SVG を書き出せます。",
+  "skip": "スキップ",
+  "back": "戻る",
+  "next": "次へ",
+  "done": "完了"
+}

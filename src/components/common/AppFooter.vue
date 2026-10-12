@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
-import { APP_NAME, REPO_URL } from '@/config'
+import { APP_NAME, FEEDBACK_URL, REPO_URL } from '@/config'
 
 const { t } = useI18n()
 </script>
@@ -13,6 +13,7 @@ const { t } = useI18n()
       <RouterLink to="/legal/terms">{{ t('app.terms') }}</RouterLink>
       <RouterLink to="/legal/notice">{{ t('app.notice') }}</RouterLink>
       <a :href="REPO_URL" target="_blank" rel="noopener">GitHub</a>
+      <a :href="FEEDBACK_URL" target="_blank" rel="noopener">{{ t('app.feedback') }}</a>
     </nav>
     <p class="disclaimer">{{ t('app.disclaimer', { app: APP_NAME }) }}</p>
   </footer>

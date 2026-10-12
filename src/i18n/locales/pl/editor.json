@@ -25,7 +25,7 @@
   "empty_hint": "Upuść tu obraz, wklej go (Ctrl+V) albo kliknij „Obraz” powyżej",
   "drop_here": "Upuść tutaj obrazy",
   "import_failed": "{n} plik(ów) nie dało się odczytać.",
-  "shortcuts": "Wskazówki: przezroczyste miejsca przepuszczają kliknięcie · Alt+klik = wybierz warstwę pod spodem · dwuklik na tekście, aby edytować · strzałki przesuwają (Shift = 5 mm) · [ ] = do tyłu/do przodu · Ctrl+C/V kopiuj/wklej · Ctrl+Z/Y · Ctrl+D duplikuj · Del usuń · Ctrl+S zapisz · Spacja + przeciąganie = przesuń widok",
+  "shortcuts": "Wskazówki: przezroczyste miejsca przepuszczają kliknięcie · Shift/Ctrl+klik = dodaj do zaznaczenia/usuń z niego · Shift+przeciąganie na pustym miejscu = zaznacz obszar · Ctrl+A zaznacz wszystko · kliknięcie zaznacza całą grupę, dwuklik = jeden element · Alt+klik = warstwa pod spodem / jeden element · dwuklik na tekście, aby edytować · strzałki przesuwają (Shift = 5 mm) · [ ] = do tyłu/do przodu · Ctrl+C/V kopiuj/wklej · Ctrl+G grupuj · Ctrl+Shift+G rozgrupuj · Ctrl+Z/Y · Ctrl+D duplikuj · Del usuń · Ctrl+S zapisz · Spacja + przeciąganie = przesuń widok · Alt podczas przeciągania = bez przyciągania",
   "no_layers": "Na razie brak warstw. Dodaj obraz, tekst albo tło.",
   "rename": "Zmień nazwę",
   "rename_hint": "Kliknij dwukrotnie, aby zmienić nazwę",

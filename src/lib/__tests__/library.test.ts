@@ -250,8 +250,27 @@ function mockCtx() {
 }
 
 describe('patterns', () => {
-  it('lists the 12 pattern ids', () => {
-    expect(PATTERN_IDS.length).toBe(12)
+  it('lists the 18 unique pattern ids', () => {
+    expect(PATTERN_IDS.length).toBe(18)
+    expect(new Set(PATTERN_IDS).size).toBe(PATTERN_IDS.length)
+    for (const id of ['camo', 'lightning', 'stars', 'shards', 'circuit', 'flames']) expect(PATTERN_IDS).toContain(id)
+  })
+
+  it.each(['camo', 'lightning', 'stars', 'shards', 'circuit', 'flames'] as const)('%s stays bounded for tiny tiles on big labels', (id) => {
+    const m = mockCtx()
+    drawPattern(m.ctx, id, 250, 250, '#fff', '#000', 0.3, 0)
+    const ops = Object.values(m.calls).reduce((a, b) => a + b, 0)
+    expect(ops).toBeLessThan(400_000)
+    expect(m.state.bad).toBe(0)
+  })
+
+  it('scattered patterns keep the caller alpha (layer opacity)', () => {
+    for (const id of ['camo', 'shards'] as const) {
+      const m = mockCtx()
+      ;(m.ctx as unknown as { globalAlpha: number }).globalAlpha = 0.5
+      drawPattern(m.ctx, id, 40, 40, '#fff', '#000', 5, 0)
+      expect((m.ctx as unknown as { globalAlpha: number }).globalAlpha).toBe(0.5)
+    }
   })
 
   const combos: [PatternId, number, number, number, number][] = []

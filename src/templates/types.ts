@@ -1,9 +1,20 @@
 export type Point = [x: number, y: number]
 
-export type TemplateCategory = 'battlepass' | 'bey'
+export type TemplateCategory = 'battlepass' | 'bey' | 'accessories' | 'generic' | 'custom'
 
 /** Which 3D scene the preview uses for this template. */
 export type PreviewModel = 'battlepass' | 'chip' | 'flat'
+
+/** Shape of a user-defined template (see custom.ts). */
+export type CustomShape = 'rect' | 'ellipse'
+
+export interface CustomSpec {
+  shape: CustomShape
+  widthMm: number
+  heightMm: number
+  /** Corner radius for 'rect' (0 = sharp corners); always 0 for 'ellipse'. */
+  radiusMm: number
+}
 
 export interface StickerTemplate {
   id: string
@@ -20,4 +31,8 @@ export interface StickerTemplate {
    */
   measured: boolean
   previewModel: PreviewModel
+  /** Recommended safe margin inside the cut line in mm (consumers default to 1.5). */
+  safeMm?: number
+  /** Set for user-defined sizes; the id encodes the same values. */
+  custom?: CustomSpec
 }

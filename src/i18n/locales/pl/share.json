@@ -23,5 +23,10 @@
   "has_placeholders": "Zawiera {n} miejsc na obrazy – wstaw w edytorze własne zdjęcia.",
   "remix": "Otwórz w edytorze",
   "save": "Dodaj do moich projektów",
-  "local_note": "Projekt otwiera się tylko w Twojej przeglądarce. Nic z tego nie znajduje się na serwerze."
+  "local_note": "Projekt otwiera się tylko w Twojej przeglądarce. Nic z tego nie znajduje się na serwerze.",
+  "qr": "Kod QR",
+  "qr_alt": "Kod QR linku do udostępnienia",
+  "qr_hint": "Zeskanuj aparatem telefonu, aby otworzyć tam projekt.",
+  "qr_dense": "Długi link – kod jest bardzo gęsty. Jeśli skanowanie się nie uda, lepiej udostępnij plik.",
+  "qr_too_long": "Ten link jest za długi na kod QR. Udostępnij zamiast tego PNG lub plik projektu."
 }

@@ -57,5 +57,11 @@
   "pattern_zigzag": "Zigzag",
   "pattern_grid": "Raster",
   "pattern_rays": "Stralen",
-  "pattern_scales": "Drakenschubben"
+  "pattern_scales": "Drakenschubben",
+  "pattern_camo": "Camouflage",
+  "pattern_lightning": "Bliksemschichten",
+  "pattern_stars": "Sterren",
+  "pattern_shards": "Scherven",
+  "pattern_circuit": "Printplaat",
+  "pattern_flames": "Vlammen"
 }

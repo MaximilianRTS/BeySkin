@@ -1,4 +1,5 @@
 import { getAlphaMaskSync } from './assets'
+import { layerColorKey } from './imageAdjust'
 import { framePath, getFrame, getShape, type ShapeDef } from './library'
 import { imageLayerHeight, type Design, type FrameLayer, type Layer } from './model'
 import { layerSize } from './render'
@@ -63,7 +64,7 @@ export function layerHitAt(design: Design, template: StickerTemplate, index: num
         if (frameIndex > index && !insideFrameWindow(design.layers[frameIndex] as FrameLayer, p)) return false
       }
       if (!layer.assetId) return true // placeholder
-      const mask = getAlphaMaskSync(layer.assetId)
+      const mask = getAlphaMaskSync(layer.assetId, layerColorKey(layer))
       if (!mask) return true // not analysed yet → treat as opaque
       const u = Math.min(mask.w - 1, Math.max(0, Math.floor(((l.x + layer.width / 2) / layer.width) * mask.w)))
       const v = Math.min(mask.h - 1, Math.max(0, Math.floor(((l.y + ih / 2) / ih) * mask.h)))

@@ -1,0 +1,13 @@
+{
+  "progress": "Stap {n} van {total}",
+  "step_template_title": "Kies een sjabloon",
+  "step_template_text": "Kies eerst waarvoor je ontwerpt – Battle Pass, Gear Chip en meer. Formaat en snijlijn passen zich automatisch aan. Op je telefoon vind je de sjablonen op het tabblad „{tab}”.",
+  "step_add_title": "Afbeeldingen en tekst toevoegen",
+  "step_add_text": "Met „{image}” upload je een foto of logo; daarnaast voeg je tekst, stickers en vlakken toe. Verplaats, draai en schaal direct op het etiket.",
+  "step_print_title": "Afdrukken en exporteren",
+  "step_print_text": "Alles wordt automatisch opgeslagen in „{library}”. Daar stel je de aantallen in en maak je het afdrukvel als pdf. Via „{export}” krijg je een losse PNG of de snijlijn als SVG.",
+  "skip": "Overslaan",
+  "back": "Terug",
+  "next": "Volgende",
+  "done": "Klaar"
+}

@@ -20,6 +20,19 @@ function typeIcon(l: Layer) {
   return { image: 'image', text: 'text', shape: 'shape', fill: 'fill', frame: 'ring' }[l.type]
 }
 
+/** Plain click selects just this layer (also inside a group); Shift/Ctrl/Cmd+click toggles it. */
+function onRowClick(l: Layer, e: MouseEvent) {
+  if (e.shiftKey || e.ctrlKey || e.metaKey) store.toggleSelect(l.id, false)
+  else store.selectedId = l.id
+}
+
+/** Stable colour per group for the bar in front of its rows. */
+function groupColor(groupId: string) {
+  let h = 0
+  for (const ch of groupId) h = (h * 31 + ch.charCodeAt(0)) % 360
+  return `hsl(${h} 75% 58%)`
+}
+
 function finishRename(l: Layer, e: Event) {
   const name = (e.target as HTMLInputElement).value.trim()
   renamingId.value = null
@@ -58,15 +71,23 @@ function onDrop(index: number) {
         v-for="{ layer, index } in rows"
         :key="layer.id"
         class="row-item"
-        :class="{ selected: layer.id === store.selectedId, hidden: !layer.visible, drop: dropIndex === index }"
+        :class="{
+          selected: store.isSelected(layer.id),
+          primary: layer.id === store.selectedId && store.selectedIds.length > 1,
+          grouped: !!layer.groupId,
+          hidden: !layer.visible,
+          drop: dropIndex === index,
+        }"
+        :style="layer.groupId ? { '--group-color': groupColor(layer.groupId) } : undefined"
+        :title="layer.groupId ? t('selection.group_badge') : undefined"
         role="option"
-        :aria-selected="layer.id === store.selectedId"
+        :aria-selected="store.isSelected(layer.id)"
         draggable="true"
         @dragstart="onDragStart(layer.id, $event)"
         @dragover="onDragOver(index, $event)"
         @drop="onDrop(index)"
         @dragend="onDragEnd"
-        @click="store.selectedId = layer.id"
+        @click="onRowClick(layer, $event)"
       >
         <Icon :name="typeIcon(layer)" class="type" />
         <input
@@ -99,16 +120,19 @@ function onDrop(index: number) {
         </button>
       </li>
     </ul>
+    <p v-if="rows.length > 1" class="muted multi-hint">{{ t('selection.layers_hint') }}</p>
     <div v-if="store.selected" class="actions">
-      <button class="btn btn-sm" :title="t('editor.layer_up')" :aria-label="t('editor.layer_up')"
-        @click="store.moveLayer(store.selected.id, store.design.layers.indexOf(store.selected) + 1)">
-        <Icon name="up" />
-      </button>
-      <button class="btn btn-sm" :title="t('editor.layer_down')" :aria-label="t('editor.layer_down')"
-        @click="store.moveLayer(store.selected.id, store.design.layers.indexOf(store.selected) - 1)">
-        <Icon name="down" />
-      </button>
-      <button class="btn btn-sm" :title="t('editor.duplicate') + ' (Ctrl+D)'" @click="store.duplicateLayer(store.selected.id)">
+      <template v-if="store.selectedIds.length === 1">
+        <button class="btn btn-sm" :title="t('editor.layer_up')" :aria-label="t('editor.layer_up')"
+          @click="store.moveLayer(store.selected.id, store.design.layers.indexOf(store.selected) + 1)">
+          <Icon name="up" />
+        </button>
+        <button class="btn btn-sm" :title="t('editor.layer_down')" :aria-label="t('editor.layer_down')"
+          @click="store.moveLayer(store.selected.id, store.design.layers.indexOf(store.selected) - 1)">
+          <Icon name="down" />
+        </button>
+      </template>
+      <button class="btn btn-sm" :title="t('editor.duplicate') + ' (Ctrl+D)'" @click="store.duplicateSelected()">
         <Icon name="copy" /> {{ t('editor.duplicate') }}
       </button>
       <button class="btn btn-sm btn-icon" :title="t('editor.copy_layer') + ' (Ctrl+C)'" :aria-label="t('editor.copy_layer')" @click="store.copySelected()">
@@ -116,7 +140,7 @@ function onDrop(index: number) {
       </button>
       <span class="spacer" />
       <button class="btn btn-sm btn-danger" :title="t('editor.delete') + ' (Del)'" :aria-label="t('editor.delete')"
-        @click="store.removeLayer(store.selected.id)">
+        @click="store.removeSelected()">
         <Icon name="trash" />
       </button>
     </div>
@@ -148,6 +172,28 @@ function onDrop(index: number) {
 .row-item.selected {
   background: var(--accent-soft);
   border-color: var(--accent-border);
+}
+.row-item.primary {
+  border-color: var(--accent);
+}
+/* Group members: coloured bar on the left, slightly indented. */
+.row-item.grouped {
+  position: relative;
+  padding-left: 14px;
+}
+.row-item.grouped::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 3px;
+  bottom: 3px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--group-color);
+}
+.multi-hint {
+  font-size: 11px;
+  margin: 6px 0 0;
 }
 .row-item.hidden .name {
   opacity: 0.45;

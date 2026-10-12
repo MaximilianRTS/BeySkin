@@ -25,7 +25,7 @@
   "empty_hint": "Trascina qui un’immagine, incollala (Ctrl+V) o clicca su «Immagine» qui sopra",
   "drop_here": "Trascina qui le immagini",
   "import_failed": "Impossibile leggere {n} file.",
-  "shortcuts": "Suggerimenti: le zone trasparenti lasciano passare il clic · Alt+clic = scegli il livello sotto · doppio clic sul testo per modificarlo · frecce per spostare (Shift = 5 mm) · [ ] = indietro/avanti · Ctrl+C/V copia/incolla · Ctrl+Z/Y · Ctrl+D duplica · Canc elimina · Ctrl+S salva · Spazio + trascina = sposta vista",
+  "shortcuts": "Suggerimenti: le zone trasparenti lasciano passare il clic · Shift/Ctrl+clic = aggiungi/togli dalla selezione · Shift+trascina su uno spazio vuoto = seleziona un’area · Ctrl+A seleziona tutto · un clic seleziona tutto il gruppo, doppio clic = un solo elemento · Alt+clic = livello sotto / un solo elemento · doppio clic sul testo per modificarlo · frecce per spostare (Shift = 5 mm) · [ ] = indietro/avanti · Ctrl+C/V copia/incolla · Ctrl+G raggruppa · Ctrl+Shift+G separa · Ctrl+Z/Y · Ctrl+D duplica · Canc elimina · Ctrl+S salva · Spazio + trascina = sposta vista · Alt mentre trascini = senza aggancio",
   "no_layers": "Ancora nessun livello. Aggiungi un’immagine, un testo o uno sfondo.",
   "rename": "Rinomina",
   "rename_hint": "Doppio clic per rinominare",

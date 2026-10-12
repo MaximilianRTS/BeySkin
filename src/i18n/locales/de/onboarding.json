@@ -1,0 +1,13 @@
+{
+  "progress": "Schritt {n} von {total}",
+  "step_template_title": "Vorlage wählen",
+  "step_template_text": "Wähle zuerst, wofür du gestaltest – Battle Pass, Gear Chip und mehr. Größe und Schnittlinie passen sich automatisch an. Auf dem Handy findest du die Vorlagen im Reiter „{tab}“.",
+  "step_add_title": "Bilder und Text hinzufügen",
+  "step_add_text": "Mit „{image}“ lädst du ein Foto oder Logo hoch, daneben fügst du Text, Sticker und Flächen hinzu. Verschieben, drehen und skalieren direkt auf dem Etikett.",
+  "step_print_title": "Drucken und exportieren",
+  "step_print_text": "Alles wird automatisch in „{library}“ gespeichert. Dort legst du die Anzahl fest und erstellst den Druckbogen als PDF. Über „{export}“ bekommst du ein einzelnes PNG oder die Schnittlinie als SVG.",
+  "skip": "Überspringen",
+  "back": "Zurück",
+  "next": "Weiter",
+  "done": "Fertig"
+}

@@ -25,7 +25,7 @@
   "empty_hint": "Drop an image here, paste it (Ctrl+V) or click “Image” above",
   "drop_here": "Drop images here",
   "import_failed": "{n} file(s) could not be read.",
-  "shortcuts": "Tips: transparent areas are click-through · Alt+click = select the layer below · double-click text to edit · arrow keys nudge (Shift = 5 mm) · [ ] = send backward/forward · Ctrl+C/V copy/paste · Ctrl+Z/Y · Ctrl+D duplicate · Del delete · Ctrl+S save · Space + drag = pan",
+  "shortcuts": "Tips: transparent areas are click-through · Shift/Ctrl+click = add to/remove from selection · Shift+drag on empty space = select an area · Ctrl+A select all · a click selects a whole group, double-click = single member · Alt+click = layer below / single member · double-click text to edit · arrow keys nudge (Shift = 5 mm) · [ ] = send backward/forward · Ctrl+C/V copy/paste · Ctrl+G group · Ctrl+Shift+G ungroup · Ctrl+Z/Y · Ctrl+D duplicate · Del delete · Ctrl+S save · Space + drag = pan · hold Alt while dragging = no snapping",
   "no_layers": "No layers yet. Add an image, text or background.",
   "rename": "Rename",
   "rename_hint": "Double-click to rename",

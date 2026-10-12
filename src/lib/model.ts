@@ -47,6 +47,8 @@ interface LayerBase {
   rotation: number
   flipX: boolean
   flipY: boolean
+  /** Layers sharing a group id are selected and moved together (≥ 2 members). */
+  groupId?: string | null
 }
 
 export interface ImageLayer extends LayerBase {
@@ -63,6 +65,32 @@ export interface ImageLayer extends LayerBase {
    * it only through the opening of the design's chip frame (like behind a window).
    */
   mask?: 'circle' | 'frame' | null
+  /** Adjustments in percent (100 = unchanged); missing = neutral. */
+  brightness?: number
+  contrast?: number
+  saturation?: number
+  /** Hue rotation in degrees. */
+  hue?: number
+  /** 0–100 %. */
+  grayscale?: number
+  /** Background removal: pixels close to this colour become transparent; null = off. */
+  keyColor?: string | null
+  /** Percent of the maximum colour distance removed completely. */
+  keyTolerance?: number
+  /** Percent width of the soft transition beyond the tolerance. */
+  keySoftness?: number
+}
+
+/** Values of the optional image fields that change nothing. */
+export const IMAGE_ADJUST_DEFAULTS = {
+  brightness: 100,
+  contrast: 100,
+  saturation: 100,
+  hue: 0,
+  grayscale: 0,
+  keyColor: null as string | null,
+  keyTolerance: 15,
+  keySoftness: 5,
 }
 
 export interface TextLayer extends LayerBase {
@@ -78,6 +106,31 @@ export interface TextLayer extends LayerBase {
   /** Outline width in mm, 0 = none. */
   strokeWidth: number
   align: 'left' | 'center' | 'right'
+  /** Extra space between letters in mm (may be negative). */
+  letterSpacing?: number
+  /** Text on an arc: angle in degrees, > 0 bends upwards (rainbow), < 0 downwards (smile), 0 = straight. */
+  curve?: number
+  /** Drop shadow colour; null = off. Offset and blur in mm. */
+  shadowColor?: string | null
+  shadowX?: number
+  shadowY?: number
+  shadowBlur?: number
+  /** Outer glow colour; null = off. */
+  glowColor?: string | null
+  /** Glow size in mm. */
+  glowSize?: number
+}
+
+/** Values of the optional text effect fields that leave the text plain. */
+export const TEXT_EFFECT_DEFAULTS = {
+  letterSpacing: 0,
+  curve: 0,
+  shadowColor: null as string | null,
+  shadowX: 0.4,
+  shadowY: 0.4,
+  shadowBlur: 0.4,
+  glowColor: null as string | null,
+  glowSize: 0.8,
 }
 
 export interface FillLayer extends LayerBase {
@@ -167,6 +220,7 @@ export function normalizeDesign(d: Design): Design {
   // Chip pictures used to be auto-cropped to their own circle; show them through the frame instead.
   const hasFrame = d.layers.some((l) => l.type === 'frame')
   for (const l of d.layers as Layer[]) {
+    l.groupId ??= null
     if (d.templateId === 'gear_chip' && l.type === 'image' && l.mask === 'circle') l.mask = hasFrame ? 'frame' : null
     if (l.type === 'frame') {
       l.ringColor ??= FRAME_DEFAULT_COLORS.ringColor
@@ -181,6 +235,9 @@ export function normalizeDesign(d: Design): Design {
       l.patternScale ??= 4
     } else if (l.type === 'image') {
       l.mask ??= null
+      for (const [k, v] of Object.entries(IMAGE_ADJUST_DEFAULTS)) (l as unknown as Record<string, unknown>)[k] ??= v
+    } else if (l.type === 'text') {
+      for (const [k, v] of Object.entries(TEXT_EFFECT_DEFAULTS)) (l as unknown as Record<string, unknown>)[k] ??= v
     }
   }
   return d

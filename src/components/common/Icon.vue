@@ -54,6 +54,11 @@ const ICONS: Record<string, string> = {
   shape: 'M8.5 3l5 8.5h-10z M17 21a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M3 14h7v7H3z',
   heart: 'M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z',
   flag: 'M4 22V4 M4 4h13l-2 4 2 4H4',
+  group: 'M3 7V5a2 2 0 0 1 2-2h2 M17 3h2a2 2 0 0 1 2 2v2 M21 17v2a2 2 0 0 1-2 2h-2 M7 21H5a2 2 0 0 1-2-2v-2 M7 7h7v5H7z M10 12h7v5h-7z',
+  ungroup: 'M3 4h8v6H3z M13 14h8v6h-8z',
+  'dist-h': 'M3 3v18 M21 3v18 M9 7h6v10H9z',
+  'dist-v': 'M3 3h18 M3 21h18 M7 9h10v6H7z',
+  shield: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',
 }
 
 const props = defineProps<{ name: string; size?: number }>()

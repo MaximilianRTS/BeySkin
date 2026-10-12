@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { APP_NAME, BRAND_PARENT, BRAND_PARENT_URL } from '@/config'
+import { useRoute } from 'vue-router'
+import { APP_NAME, BRAND_PARENT, BRAND_PARENT_URL, FEEDBACK_URL } from '@/config'
 import { LOCALE_NAMES, setLocale, SUPPORTED_LOCALES, type Locale } from '@/i18n'
 import { setTheme, themePref, type ThemePref } from '@/lib/theme'
+import { canInstall, promptInstall } from '@/lib/pwa'
+import { startTour } from '@/lib/onboarding'
 import Icon from '@/components/common/Icon.vue'
 
 const { t, locale } = useI18n()
+const route = useRoute()
 const logoSrc = `${import.meta.env.BASE_URL}brand/bey-companion-logo.png`
 
 const THEME_ORDER: ThemePref[] = ['system', 'light', 'dark']
@@ -16,6 +20,13 @@ const themeLabel = computed(() => t('app.theme_toggle', { mode: t(`app.theme_${t
 function cycleTheme() {
   const next = THEME_ORDER[(THEME_ORDER.indexOf(themePref.value) + 1) % THEME_ORDER.length]
   setTheme(next)
+}
+async function install() {
+  try {
+    await promptInstall()
+  } catch (err) {
+    console.warn(err)
+  }
 }
 function onLocale(e: Event) {
   setLocale((e.target as HTMLSelectElement).value as Locale)
@@ -34,6 +45,15 @@ function onLocale(e: Event) {
       </div>
     </div>
     <span class="spacer" />
+    <button v-if="canInstall" class="btn btn-sm install" :title="t('app.install_hint')" :aria-label="t('app.install')" @click="install">
+      <Icon name="download" :size="14" /> <span class="install-label">{{ t('app.install') }}</span>
+    </button>
+    <a class="btn btn-ghost btn-icon feedback" :href="FEEDBACK_URL" target="_blank" rel="noopener"
+      :title="t('app.feedback')" :aria-label="t('app.feedback')">
+      <Icon name="flag" />
+    </a>
+    <button v-if="route.name === 'editor'" class="btn btn-ghost btn-icon help" :title="t('app.help_tour')"
+      :aria-label="t('app.help_tour')" @click="startTour">?</button>
     <label class="lang">
       <Icon name="globe" />
       <span class="sr-only">{{ t('app.language') }}</span>
@@ -120,6 +140,16 @@ function onLocale(e: Event) {
   }
   .brand-parent {
     font-size: 10px;
+  }
+}
+.help {
+  font-size: 16px;
+  font-weight: 800;
+}
+@media (max-width: 559px) {
+  .feedback,
+  .install-label {
+    display: none;
   }
 }
 .lang {

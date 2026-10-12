@@ -1,0 +1,13 @@
+{
+  "progress": "Étape {n} sur {total}",
+  "step_template_title": "Choisissez un modèle",
+  "step_template_text": "Choisissez d’abord pour quoi vous créez – Battle Pass, Gear Chip et plus. La taille et la ligne de coupe s’adaptent automatiquement. Sur mobile, les modèles se trouvent dans l’onglet « {tab} ».",
+  "step_add_title": "Ajoutez images et texte",
+  "step_add_text": "Avec « {image} », importez une photo ou un logo ; à côté, ajoutez texte, stickers et aplats. Déplacez, tournez et redimensionnez directement sur l’étiquette.",
+  "step_print_title": "Imprimer et exporter",
+  "step_print_text": "Tout est enregistré automatiquement dans « {library} ». Vous y choisissez les quantités et créez la planche d’impression en PDF. Avec « {export} », obtenez un PNG seul ou la ligne de coupe en SVG.",
+  "skip": "Passer",
+  "back": "Retour",
+  "next": "Suivant",
+  "done": "Terminé"
+}

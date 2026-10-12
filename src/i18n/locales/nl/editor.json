@@ -25,7 +25,7 @@
   "empty_hint": "Sleep hier een afbeelding, plak hem (Ctrl+V) of klik hierboven op ‘Afbeelding’",
   "drop_here": "Zet afbeeldingen hier neer",
   "import_failed": "{n} bestand(en) konden niet worden gelezen.",
-  "shortcuts": "Tips: transparante delen zijn doorklikbaar · Alt+klik = laag eronder kiezen · dubbelklik op tekst om te bewerken · pijltjestoetsen verschuiven (Shift = 5 mm) · [ ] = naar achter/voren · Ctrl+C/V kopiëren/plakken · Ctrl+Z/Y · Ctrl+D dupliceren · Del verwijderen · Ctrl+S opslaan · Spatie + slepen = weergave verschuiven",
+  "shortcuts": "Tips: transparante delen zijn doorklikbaar · Shift/Ctrl+klik = aan selectie toevoegen/eruit halen · Shift+slepen op een lege plek = gebied selecteren · Ctrl+A alles selecteren · een klik selecteert de hele groep, dubbelklik = één element · Alt+klik = laag eronder / één element · dubbelklik op tekst om te bewerken · pijltjestoetsen verschuiven (Shift = 5 mm) · [ ] = naar achter/voren · Ctrl+C/V kopiëren/plakken · Ctrl+G groeperen · Ctrl+Shift+G groep opheffen · Ctrl+Z/Y · Ctrl+D dupliceren · Del verwijderen · Ctrl+S opslaan · Spatie + slepen = weergave verschuiven · Alt tijdens slepen = niet uitlijnen",
   "no_layers": "Nog geen lagen. Voeg een afbeelding, tekst of achtergrond toe.",
   "rename": "Hernoemen",
   "rename_hint": "Dubbelklik om te hernoemen",

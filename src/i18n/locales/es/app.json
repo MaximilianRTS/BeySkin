@@ -13,5 +13,13 @@
   "disclaimer": "{app} es un proyecto de fans no oficial y gratuito, sin relación con Takara Tomy, Hasbro ni d-rights. BEYBLADE es una marca de sus respectivos titulares.",
   "theme_toggle": "Cambiar tema (actual: {mode})",
   "legal_note": "Los textos legales están disponibles en alemán e inglés.",
-  "legal_nav": "Información legal"
+  "legal_nav": "Información legal",
+  "feedback": "Comentarios / informar de un error",
+  "install": "Instalar app",
+  "install_hint": "Instala BeySkin como app – también funciona sin conexión",
+  "help_tour": "Mostrar la guía rápida",
+  "update_available": "Hay una nueva versión de BeySkin disponible.",
+  "update_reload": "Recargar",
+  "update_later": "Más tarde",
+  "offline_ready": "BeySkin ya funciona sin conexión."
 }

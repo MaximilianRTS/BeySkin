@@ -7,7 +7,7 @@ import { confirmDialog } from '@/lib/confirm'
 import { toast } from '@/lib/toast'
 import { importProjectFile, projectFileBlob } from '@/lib/projectFile'
 import { saveBlob, timestamp } from '@/lib/download'
-import { getTemplate } from '@/templates'
+import { getTemplate, templateName as tplName } from '@/templates'
 import Icon from '@/components/common/Icon.vue'
 
 /**
@@ -21,7 +21,7 @@ const library = useLibraryStore()
 const fileInput = ref<HTMLInputElement>()
 
 const total = computed(() => library.entries.reduce((n, e) => n + e.quantity, 0))
-const templateName = (id: string) => t(`templates.${getTemplate(id).i18nKey}`)
+const templateName = (id: string) => tplName(t, getTemplate(id))
 
 function open(id: string) {
   const e = library.entries.find((x) => x.design.id === id)

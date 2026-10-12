@@ -1,5 +1,7 @@
-import { getBitmap, getBitmapSync } from './assets'
-import { imageLayerHeight, type Design, type FillLayer, type FrameLayer, type Layer, type ShapeLayer, type TextLayer } from './model'
+import { getBitmap, getBitmapSync, getVariant } from './assets'
+import { layerFilter, layerVariant, variantKey } from './imageAdjust'
+import { imageLayerHeight, TEXT_EFFECT_DEFAULTS, type Design, type FillLayer, type FrameLayer, type ImageLayer, type Layer, type ShapeLayer, type TextLayer } from './model'
+import { layoutText, type TextLayout, type TextRun } from './textLayout'
 import { bandArc, drawPattern, framePath, getFrame, getShape, PATTERN_IDS, type FrameDef, type PatternId } from './library'
 import { getTemplate, type StickerTemplate } from '@/templates'
 
@@ -8,10 +10,33 @@ import { getTemplate, type StickerTemplate } from '@/templates'
  * thumbnails, share previews and the 3D texture. Geometry is in mm; callers choose the resolution.
  */
 
-export const FONTS = ['Bangers', 'Russo One', 'Anton', 'Arial', 'Impact', 'Georgia', 'Courier New'] as const
+export const FONTS = [
+  'Bangers',
+  'Russo One',
+  'Anton',
+  'Bungee',
+  'Black Ops One',
+  'Orbitron',
+  'Audiowide',
+  'Teko',
+  'Press Start 2P',
+  'Arial',
+  'Impact',
+  'Georgia',
+  'Courier New',
+] as const
 
 export type Canvas2D = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
+/**
+ * Looks up an image by asset id – or by variant key (asset id + processing
+ * parameters, see imageAdjust.variantKey) for colour-keyed / adjusted images.
+ */
 export type ImageResolver = (assetId: string) => CanvasImageSource | null
+
+/** Key under which drawLayers asks the resolver for an image layer's picture. */
+export function imageKey(layer: ImageLayer): string {
+  return variantKey(layer.assetId, layerVariant(layer))
+}
 
 export interface RenderOptions {
   pxPerMm: number
@@ -36,23 +61,36 @@ export function outlinePath(template: StickerTemplate, offsetX = 0, offsetY = 0)
 
 // ---------- text measurement ----------
 
-const LINE_HEIGHT = 1.15
 let measureCtx: OffscreenCanvasRenderingContext2D | null = null
 
 function fontString(layer: TextLayer, sizePx: number): string {
   return `${layer.italic ? 'italic ' : ''}${layer.bold ? 'bold ' : ''}${sizePx}px "${layer.fontFamily}"`
 }
 
-export function textSize(layer: TextLayer): { w: number; h: number } {
-  measureCtx ??= new OffscreenCanvas(1, 1).getContext('2d')!
+/** Layouts are cached per text + style; cleared when web fonts finish loading (metrics change). */
+const layoutCache = new Map<string, TextLayout>()
+if (typeof document !== 'undefined') document.fonts?.addEventListener?.('loadingdone', () => layoutCache.clear())
+
+/** Letter positions and box of a text layer in mm (see textLayout.ts). */
+export function textLayout(layer: TextLayer): TextLayout {
   const ref = 100
-  measureCtx.font = fontString(layer, ref)
-  const lines = layer.text.split('\n')
-  const widest = Math.max(1, ...lines.map((l) => measureCtx!.measureText(l).width))
-  return {
-    w: (widest / ref) * layer.fontSize + layer.strokeWidth * 2,
-    h: lines.length * layer.fontSize * LINE_HEIGHT + layer.strokeWidth * 2,
-  }
+  const font = fontString(layer, ref)
+  const key = [font, layer.fontSize, layer.align, layer.letterSpacing ?? 0, layer.curve ?? 0, layer.text].join('\u0000')
+  const hit = layoutCache.get(key)
+  if (hit) return hit
+  measureCtx ??= new OffscreenCanvas(1, 1).getContext('2d')!
+  measureCtx.font = font
+  const f = layer.fontSize / ref
+  const layout = layoutText(layer, (s) => measureCtx!.measureText(s).width * f)
+  if (layoutCache.size > 300) layoutCache.clear()
+  layoutCache.set(key, layout)
+  return layout
+}
+
+/** Unrotated box of a text layer in mm, including the outline (shadow and glow do not enlarge it). */
+export function textSize(layer: TextLayer): { w: number; h: number } {
+  const { w, h } = textLayout(layer)
+  return { w: w + layer.strokeWidth * 2, h: h + layer.strokeWidth * 2 }
 }
 
 export function shapeHeight(layer: ShapeLayer): number {
@@ -234,30 +272,76 @@ function drawPlaceholder(ctx: Canvas2D, w: number, h: number) {
   ctx.restore()
 }
 
+/**
+ * Draws only the canvas shadow of `paint`: the shapes themselves are moved far
+ * outside the canvas and the shadow offset brings the shadow back. Unlike a
+ * normal shadowed draw, overlapping strokes/fills do not shadow each other and
+ * the layer opacity applies once. Offsets and blur are device pixels.
+ */
+function shadowOnly(ctx: Canvas2D, color: string, dx: number, dy: number, blur: number, paint: () => void) {
+  const m = ctx.getTransform()
+  const det = m.a * m.d - m.b * m.c
+  if (!det) return
+  const far = (Math.max(ctx.canvas.width, ctx.canvas.height) + 1000) * 4
+  ctx.save()
+  // Local offset whose device-space displacement is (-far, 0).
+  ctx.translate((m.d * -far) / det, (m.b * far) / det)
+  ctx.shadowColor = color
+  ctx.shadowOffsetX = far + dx
+  ctx.shadowOffsetY = dy
+  ctx.shadowBlur = Math.max(0, blur)
+  paint()
+  ctx.restore()
+}
+
 function drawText(ctx: Canvas2D, layer: TextLayer, pxPerMm: number) {
-  const lines = layer.text.split('\n')
+  const { runs } = textLayout(layer)
   // Draw in device pixels so tiny mm font sizes are not quantised by the browser.
   ctx.scale(1 / pxPerMm, 1 / pxPerMm)
-  const size = layer.fontSize * pxPerMm
-  ctx.font = fontString(layer, size)
-  ctx.textAlign = layer.align
+  ctx.font = fontString(layer, layer.fontSize * pxPerMm)
   ctx.textBaseline = 'middle'
   ctx.lineJoin = 'round'
-  const { w } = textSize(layer)
-  const halfW = ((w - layer.strokeWidth * 2) * pxPerMm) / 2
-  const x = layer.align === 'left' ? -halfW : layer.align === 'right' ? halfW : 0
-  const lh = size * LINE_HEIGHT
-  const top = -((lines.length - 1) * lh) / 2
-  lines.forEach((line, i) => {
-    const y = top + i * lh
-    if (layer.strokeWidth > 0) {
-      ctx.strokeStyle = layer.strokeColor
-      ctx.lineWidth = layer.strokeWidth * 2 * pxPerMm
-      ctx.strokeText(line, x, y)
+
+  const run = (r: TextRun, stroke: boolean) => {
+    ctx.textAlign = r.align
+    const x = r.x * pxPerMm
+    const y = r.y * pxPerMm
+    if (!r.rot) {
+      if (stroke) ctx.strokeText(r.text, x, y)
+      else ctx.fillText(r.text, x, y)
+      return
     }
-    ctx.fillStyle = layer.color
-    ctx.fillText(line, x, y)
-  })
+    ctx.save()
+    ctx.translate(x, y)
+    ctx.rotate(r.rot)
+    if (stroke) ctx.strokeText(r.text, 0, 0)
+    else ctx.fillText(r.text, 0, 0)
+    ctx.restore()
+  }
+  // All outlines first, then all fills, so outlines never cover neighbouring letters.
+  const paint = (fill: string, stroke: string, strokeMm: number) => {
+    if (strokeMm > 0) {
+      ctx.strokeStyle = stroke
+      ctx.lineWidth = strokeMm * 2 * pxPerMm
+      for (const r of runs) run(r, true)
+    }
+    ctx.fillStyle = fill
+    for (const r of runs) run(r, false)
+  }
+
+  // Device pixels: canvas shadows ignore the transform, so convert from mm here.
+  const glowSize = layer.glowSize ?? TEXT_EFFECT_DEFAULTS.glowSize
+  if (layer.glowColor && glowSize > 0) {
+    const c = layer.glowColor
+    shadowOnly(ctx, c, 0, 0, glowSize * pxPerMm, () => paint(c, c, layer.strokeWidth + glowSize / 2))
+  }
+  if (layer.shadowColor) {
+    const c = layer.shadowColor
+    shadowOnly(ctx, c, (layer.shadowX ?? TEXT_EFFECT_DEFAULTS.shadowX) * pxPerMm, (layer.shadowY ?? TEXT_EFFECT_DEFAULTS.shadowY) * pxPerMm, (layer.shadowBlur ?? TEXT_EFFECT_DEFAULTS.shadowBlur) * pxPerMm, () =>
+      paint(c, c, layer.strokeWidth),
+    )
+  }
+  paint(layer.color, layer.strokeColor, layer.strokeWidth)
 }
 
 /**
@@ -292,14 +376,18 @@ export function drawLayers(
       ctx.rotate((layer.rotation * Math.PI) / 180)
       ctx.scale(layer.flipX ? -1 : 1, layer.flipY ? -1 : 1)
       if (layer.type === 'image') {
-        const img = resolve(layer.assetId)
+        const img = layer.assetId ? resolve(imageKey(layer)) : null
         const h = imageLayerHeight(layer)
         if (layer.mask === 'circle') {
           ctx.beginPath()
           ctx.arc(0, 0, Math.min(layer.width, h) / 2, 0, Math.PI * 2)
           ctx.clip()
         }
-        if (img) ctx.drawImage(img, -layer.width / 2, -h / 2, layer.width, h)
+        if (img) {
+          const filter = layerFilter(layer)
+          if (filter) ctx.filter = filter
+          ctx.drawImage(img, -layer.width / 2, -h / 2, layer.width, h)
+        }
         else if (placeholders && !layer.assetId) drawPlaceholder(ctx, layer.width, h)
       } else if (layer.type === 'shape') {
         drawShape(ctx, layer)
@@ -373,15 +461,17 @@ export function drawDesign(
   }
 }
 
-/** Waits until all images and fonts used by the design are available. */
+/** Waits until all images (keyed by imageKey) and fonts used by the design are available. */
 export async function preloadDesign(design: Design): Promise<Map<string, ImageBitmap>> {
   const bitmaps = new Map<string, ImageBitmap>()
   const jobs: Promise<unknown>[] = []
   for (const layer of design.layers) {
     if (layer.type === 'image' && layer.assetId) {
+      // Processed variants (colour key etc.) are awaited too, so the output matches the editor.
+      const key = imageKey(layer)
       jobs.push(
-        getBitmap(layer.assetId)
-          .then((b) => bitmaps.set(layer.assetId, b))
+        (key === layer.assetId ? getBitmap(key) : getVariant(key))
+          .then((b) => bitmaps.set(key, b))
           .catch(() => {}),
       )
     } else if (layer.type === 'frame' && layer.bandText && typeof document !== 'undefined') {

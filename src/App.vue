@@ -4,6 +4,7 @@ import AppHeader from '@/components/common/AppHeader.vue'
 import AppFooter from '@/components/common/AppFooter.vue'
 import ToastHost from '@/components/common/ToastHost.vue'
 import ConfirmHost from '@/components/common/ConfirmHost.vue'
+import UpdateBanner from '@/components/common/UpdateBanner.vue'
 import { useEditorStore } from '@/stores/editor'
 import { useLibraryStore } from '@/stores/library'
 
@@ -33,6 +34,8 @@ onMounted(async () => {
   <AppFooter />
   <ToastHost />
   <ConfirmHost />
+  <!-- Registers the service worker and offers reloading when a new version is ready. -->
+  <UpdateBanner />
 </template>
 
 <style scoped>

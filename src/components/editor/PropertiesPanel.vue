@@ -2,11 +2,13 @@
 import { computed, nextTick, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useEditorStore } from '@/stores/editor'
-import { BLEND_MODES, type BlendMode } from '@/lib/model'
+import { BLEND_MODES, IMAGE_ADJUST_DEFAULTS, TEXT_EFFECT_DEFAULTS, type BlendMode } from '@/lib/model'
+import { detectKeyColor } from '@/lib/assets'
 import { effectiveDpi, FONTS } from '@/lib/render'
 import { FRAMES, PATTERN_IDS } from '@/lib/library'
 import { toast } from '@/lib/toast'
 import NumField from '@/components/common/NumField.vue'
+import ColorField from '@/components/common/ColorField.vue'
 import Icon from '@/components/common/Icon.vue'
 
 const { t } = useI18n()
@@ -31,6 +33,43 @@ const dpiLevel = computed(() => {
   if (v == null) return null
   return v >= 250 ? 'good' : v >= 150 ? 'ok' : 'low'
 })
+
+const textFxActive = computed(() => {
+  const l = layer.value
+  return l?.type === 'text' && (!!l.letterSpacing || !!l.curve || !!l.shadowColor || !!l.glowColor)
+})
+const imageAdjusted = computed(() => {
+  const l = layer.value
+  if (l?.type !== 'image') return false
+  const raw = l as unknown as Record<string, unknown>
+  return (['brightness', 'contrast', 'saturation', 'hue', 'grayscale', 'keyColor'] as const).some(
+    (k) => (raw[k] ?? IMAGE_ADJUST_DEFAULTS[k]) !== IMAGE_ADJUST_DEFAULTS[k],
+  )
+})
+
+const detecting = ref(false)
+/** Picks the background colour from the image corners. */
+async function autoKey(fallback: string | null = null) {
+  const l = layer.value
+  if (l?.type !== 'image' || !l.assetId) return
+  detecting.value = true
+  let c: string | null = null
+  try {
+    c = await detectKeyColor(l.assetId)
+  } catch {
+    // treated like "no solid background"
+  }
+  detecting.value = false
+  if (!c) toast(t('effects.auto_failed'))
+  if (c ?? fallback) store.updateLayer(l.id, { keyColor: c ?? fallback }, true)
+}
+/** Switching background removal on starts with the detected corner colour. */
+function toggleKey() {
+  const l = layer.value
+  if (l?.type !== 'image') return
+  if (l.keyColor) set({ keyColor: null }, true)
+  else void autoKey('#ffffff')
+}
 
 function set(patch: Record<string, unknown>, record = false) {
   if (layer.value) store.updateLayer(layer.value.id, patch, record)
@@ -80,6 +119,39 @@ defineExpose({ focusText })
           <button class="btn btn-sm" @click="store.fitLayer(layer, 'cover')">{{ t('editor.fit_cover') }}</button>
           <button class="btn btn-sm" @click="store.fitLayer(layer, 'contain')">{{ t('editor.fit_contain') }}</button>
         </div>
+
+        <details v-if="layer.assetId" class="fx">
+          <summary class="panel-title">
+            {{ t('effects.image_title') }}<span v-if="imageAdjusted" class="fx-dot" :title="t('effects.active')" />
+          </summary>
+          <NumField :label="t('effects.brightness')" :value="layer.brightness ?? 100" unit="%" :min="0" :max="200" :step="1"
+            slider :decimals="0" @input="set({ brightness: $event })" @commit="commit" />
+          <NumField :label="t('effects.contrast')" :value="layer.contrast ?? 100" unit="%" :min="0" :max="200" :step="1"
+            slider :decimals="0" @input="set({ contrast: $event })" @commit="commit" />
+          <NumField :label="t('effects.saturation')" :value="layer.saturation ?? 100" unit="%" :min="0" :max="200" :step="1"
+            slider :decimals="0" @input="set({ saturation: $event })" @commit="commit" />
+          <NumField :label="t('effects.hue')" :value="layer.hue ?? 0" unit="°" :min="-180" :max="180" :step="1"
+            slider :decimals="0" @input="set({ hue: $event })" @commit="commit" />
+          <NumField :label="t('effects.grayscale')" :value="layer.grayscale ?? 0" unit="%" :min="0" :max="100" :step="1"
+            slider :decimals="0" @input="set({ grayscale: $event })" @commit="commit" />
+
+          <label class="checkbox fx-toggle">
+            <input type="checkbox" :checked="!!layer.keyColor" @change="toggleKey" />
+            {{ t('effects.bg_remove') }}
+          </label>
+          <p class="muted hint-small">{{ t('effects.bg_hint') }}</p>
+          <div v-if="layer.keyColor" class="fx-group">
+            <div class="row key-row">
+              <ColorField :value="layer.keyColor" :label="t('effects.key_color')" @input="set({ keyColor: $event })" @commit="commit" />
+              <button class="btn btn-sm" :disabled="detecting" :title="t('effects.auto_hint')" @click="autoKey()">{{ t('effects.auto') }}</button>
+            </div>
+            <NumField :label="t('effects.tolerance')" :value="layer.keyTolerance ?? IMAGE_ADJUST_DEFAULTS.keyTolerance" unit="%" :min="0" :max="100" :step="1"
+              slider :decimals="0" @input="set({ keyTolerance: $event })" @commit="commit" />
+            <NumField :label="t('effects.softness')" :value="layer.keySoftness ?? IMAGE_ADJUST_DEFAULTS.keySoftness" unit="%" :min="0" :max="100" :step="1"
+              slider :decimals="0" @input="set({ keySoftness: $event })" @commit="commit" />
+          </div>
+          <button v-if="imageAdjusted" class="btn btn-sm" @click="set({ ...IMAGE_ADJUST_DEFAULTS }, true)">{{ t('effects.reset') }}</button>
+        </details>
       </template>
 
       <!-- Text -->
@@ -112,17 +184,49 @@ defineExpose({ focusText })
           </select>
         </div>
         <div class="row colors">
-          <label class="color">
-            <input type="color" :value="layer.color" @input="set({ color: ($event.target as HTMLInputElement).value })" @change="commit" />
-            {{ t('editor.color') }}
-          </label>
-          <label class="color">
-            <input type="color" :value="layer.strokeColor" @input="set({ strokeColor: ($event.target as HTMLInputElement).value })" @change="commit" />
-            {{ t('editor.outline') }}
-          </label>
+          <ColorField :value="layer.color" :label="t('editor.color')" @input="set({ color: $event })" @commit="commit" />
+          <ColorField :value="layer.strokeColor" :label="t('editor.outline')" @input="set({ strokeColor: $event })" @commit="commit" />
         </div>
         <NumField :label="t('editor.outline_width')" :value="layer.strokeWidth" unit="mm" :min="0" :max="5" :step="0.05"
           slider @input="set({ strokeWidth: $event })" @commit="commit" />
+
+        <details class="fx">
+          <summary class="panel-title">
+            {{ t('effects.text_title') }}<span v-if="textFxActive" class="fx-dot" :title="t('effects.active')" />
+          </summary>
+          <NumField :label="t('effects.letter_spacing')" :value="layer.letterSpacing ?? 0" unit="mm" :min="-2" :max="10" :step="0.05"
+            slider @input="set({ letterSpacing: $event })" @commit="commit" />
+          <NumField :label="t('effects.curve')" :value="layer.curve ?? 0" unit="°" :min="-360" :max="360" :step="1"
+            slider :decimals="0" @input="set({ curve: $event })" @commit="commit" />
+          <p class="muted hint-small">{{ t('effects.curve_hint') }}</p>
+
+          <label class="checkbox fx-toggle">
+            <input type="checkbox" :checked="!!layer.shadowColor" @change="set({ shadowColor: layer.shadowColor ? null : '#000000' }, true)" />
+            {{ t('effects.shadow') }}
+          </label>
+          <div v-if="layer.shadowColor" class="fx-group">
+            <ColorField :value="layer.shadowColor" :label="t('editor.color')" @input="set({ shadowColor: $event })" @commit="commit" />
+            <div class="grid2">
+              <NumField :label="t('effects.offset_x')" :value="layer.shadowX ?? TEXT_EFFECT_DEFAULTS.shadowX" unit="mm" :min="-10" :max="10" :step="0.05"
+                @input="set({ shadowX: $event })" @commit="commit" />
+              <NumField :label="t('effects.offset_y')" :value="layer.shadowY ?? TEXT_EFFECT_DEFAULTS.shadowY" unit="mm" :min="-10" :max="10" :step="0.05"
+                @input="set({ shadowY: $event })" @commit="commit" />
+            </div>
+            <NumField :label="t('effects.blur')" :value="layer.shadowBlur ?? TEXT_EFFECT_DEFAULTS.shadowBlur" unit="mm" :min="0" :max="5" :step="0.05"
+              slider @input="set({ shadowBlur: $event })" @commit="commit" />
+          </div>
+
+          <label class="checkbox fx-toggle">
+            <input type="checkbox" :checked="!!layer.glowColor" @change="set({ glowColor: layer.glowColor ? null : '#ffd23f' }, true)" />
+            {{ t('effects.glow') }}
+          </label>
+          <div v-if="layer.glowColor" class="fx-group">
+            <ColorField :value="layer.glowColor" :label="t('editor.color')" @input="set({ glowColor: $event })" @commit="commit" />
+            <NumField :label="t('effects.glow_size')" :value="layer.glowSize ?? TEXT_EFFECT_DEFAULTS.glowSize" unit="mm" :min="0" :max="5" :step="0.05"
+              slider @input="set({ glowSize: $event })" @commit="commit" />
+          </div>
+          <button v-if="textFxActive" class="btn btn-sm" @click="set({ ...TEXT_EFFECT_DEFAULTS }, true)">{{ t('effects.reset_text') }}</button>
+        </details>
       </template>
 
       <!-- Frame -->
@@ -135,25 +239,14 @@ defineExpose({ focusText })
           </select>
         </div>
         <div class="frame-colors">
-          <label class="color">
-            <input type="color" :value="layer.bandColor" @input="set({ bandColor: ($event.target as HTMLInputElement).value })" @change="commit" />
-            {{ t('editor.frame_band') }}
-          </label>
-          <label class="color">
-            <input type="color" :value="layer.ringColor" @input="set({ ringColor: ($event.target as HTMLInputElement).value })" @change="commit" />
-            {{ t('editor.frame_ring') }}
-          </label>
-          <label class="color">
-            <input type="color" :value="layer.accentColor" @input="set({ accentColor: ($event.target as HTMLInputElement).value })" @change="commit" />
-            {{ t('editor.frame_accent') }}
-          </label>
+          <ColorField :value="layer.bandColor" :label="t('editor.frame_band')" @input="set({ bandColor: $event })" @commit="commit" />
+          <ColorField :value="layer.ringColor" :label="t('editor.frame_ring')" @input="set({ ringColor: $event })" @commit="commit" />
+          <ColorField :value="layer.accentColor" :label="t('editor.frame_accent')" @input="set({ accentColor: $event })" @commit="commit" />
           <label class="checkbox center-toggle">
             <input type="checkbox" :checked="layer.centerColor !== null" @change="set({ centerColor: layer.centerColor === null ? '#ffffff' : null }, true)" />
             {{ t('editor.frame_center') }}
           </label>
-          <label v-if="layer.centerColor !== null" class="color">
-            <input type="color" :value="layer.centerColor" @input="set({ centerColor: ($event.target as HTMLInputElement).value })" @change="commit" />
-          </label>
+          <ColorField v-if="layer.centerColor !== null" :value="layer.centerColor" :aria-label="t('editor.frame_center')" @input="set({ centerColor: $event })" @commit="commit" />
         </div>
         <p class="muted hint-small">{{ t('editor.frame_center_hint') }}</p>
         <div class="field">
@@ -162,10 +255,7 @@ defineExpose({ focusText })
             @input="set({ bandText: ($event.target as HTMLInputElement).value })" @change="commit" />
         </div>
         <div v-if="layer.bandText" class="row band-text-style">
-          <label class="color">
-            <input type="color" :value="layer.bandTextColor" @input="set({ bandTextColor: ($event.target as HTMLInputElement).value })" @change="commit" />
-            {{ t('editor.color') }}
-          </label>
+          <ColorField :value="layer.bandTextColor" :label="t('editor.color')" @input="set({ bandTextColor: $event })" @commit="commit" />
           <select class="input" :value="layer.bandTextFont" :aria-label="t('editor.font')"
             @change="set({ bandTextFont: ($event.target as HTMLSelectElement).value }, true)">
             <option v-for="f in FONTS" :key="f" :value="f" :style="{ fontFamily: f }">{{ f }}</option>
@@ -183,14 +273,8 @@ defineExpose({ focusText })
         <NumField :label="t('editor.width')" :value="layer.width" unit="mm" :min="0.5" :max="2000" :step="0.1"
           @input="set({ width: $event })" @commit="commit" />
         <div class="row colors">
-          <label class="color">
-            <input type="color" :value="layer.color" @input="set({ color: ($event.target as HTMLInputElement).value })" @change="commit" />
-            {{ t('editor.color') }}
-          </label>
-          <label class="color">
-            <input type="color" :value="layer.strokeColor" @input="set({ strokeColor: ($event.target as HTMLInputElement).value })" @change="commit" />
-            {{ t('editor.outline') }}
-          </label>
+          <ColorField :value="layer.color" :label="t('editor.color')" @input="set({ color: $event })" @commit="commit" />
+          <ColorField :value="layer.strokeColor" :label="t('editor.outline')" @input="set({ strokeColor: $event })" @commit="commit" />
         </div>
         <NumField :label="t('editor.outline_width')" :value="layer.strokeWidth" unit="mm" :min="0" :max="5" :step="0.05"
           slider @input="set({ strokeWidth: $event })" @commit="commit" />
@@ -211,14 +295,8 @@ defineExpose({ focusText })
         </div>
         <template v-if="layer.pattern">
           <div class="row colors">
-            <label class="color">
-              <input type="color" :value="layer.color" @input="set({ color: ($event.target as HTMLInputElement).value })" @change="commit" />
-              {{ t('editor.background') }}
-            </label>
-            <label class="color">
-              <input type="color" :value="layer.color2 ?? '#000000'" @input="set({ color2: ($event.target as HTMLInputElement).value })" @change="commit" />
-              {{ t('editor.pattern_color') }}
-            </label>
+            <ColorField :value="layer.color" :label="t('editor.background')" @input="set({ color: $event })" @commit="commit" />
+            <ColorField :value="layer.color2 ?? '#000000'" :label="t('editor.pattern_color')" @input="set({ color2: $event })" @commit="commit" />
           </div>
           <NumField :label="t('editor.pattern_scale')" :value="layer.patternScale" unit="mm" :min="0.5" :max="30" :step="0.5"
             slider :decimals="1" @input="set({ patternScale: $event })" @commit="commit" />
@@ -226,17 +304,12 @@ defineExpose({ focusText })
             slider :decimals="0" @input="set({ angle: $event })" @commit="commit" />
         </template>
         <div v-else class="row colors">
-          <label class="color">
-            <input type="color" :value="layer.color" @input="set({ color: ($event.target as HTMLInputElement).value })" @change="commit" />
-            {{ t('editor.color') }}
-          </label>
+          <ColorField :value="layer.color" :label="t('editor.color')" @input="set({ color: $event })" @commit="commit" />
           <label class="checkbox">
             <input type="checkbox" :checked="layer.color2 !== null" @change="set({ color2: layer.color2 === null ? '#000000' : null }, true)" />
             {{ t('editor.gradient') }}
           </label>
-          <label v-if="layer.color2 !== null" class="color">
-            <input type="color" :value="layer.color2" @input="set({ color2: ($event.target as HTMLInputElement).value })" @change="commit" />
-          </label>
+          <ColorField v-if="layer.color2 !== null" :value="layer.color2" :aria-label="t('editor.gradient')" @input="set({ color2: $event })" @commit="commit" />
         </div>
         <NumField v-if="!layer.pattern && layer.color2 !== null" :label="t('editor.angle')" :value="layer.angle" unit="°" :min="-180" :max="180" :step="1"
           slider :decimals="0" @input="set({ angle: $event })" @commit="commit" />
@@ -303,13 +376,6 @@ defineExpose({ focusText })
   gap: 12px;
   margin-bottom: 8px;
 }
-.color {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--text-muted);
-}
 .align {
   width: auto;
   min-height: 28px;
@@ -373,6 +439,61 @@ defineExpose({ focusText })
   margin: 0 0 8px;
 }
 .lock-note {
+  margin-bottom: 8px;
+}
+.fx {
+  margin: 10px 0 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.fx > summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 2px 0;
+  cursor: pointer;
+  list-style: none;
+}
+.fx > summary::-webkit-details-marker {
+  display: none;
+}
+.fx > summary::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 0.15s;
+}
+.fx[open] > summary {
+  margin-bottom: 8px;
+}
+.fx[open] > summary::before {
+  transform: rotate(45deg);
+}
+.fx-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.fx-toggle {
+  font-size: 13px;
+  align-items: center;
+  margin: 4px 0 8px;
+}
+.fx-group {
+  padding-left: 10px;
+  margin-bottom: 8px;
+  border-left: 2px solid var(--border);
+}
+.fx-group > .color-field {
+  margin-bottom: 8px;
+}
+.key-row {
+  gap: 12px;
   margin-bottom: 8px;
 }
 </style>

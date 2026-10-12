@@ -57,5 +57,11 @@
   "pattern_zigzag": "Zigue-zague",
   "pattern_grid": "Grade",
   "pattern_rays": "Raios",
-  "pattern_scales": "Escamas de dragão"
+  "pattern_scales": "Escamas de dragão",
+  "pattern_camo": "Camuflagem",
+  "pattern_lightning": "Relâmpagos",
+  "pattern_stars": "Estrelas",
+  "pattern_shards": "Estilhaços",
+  "pattern_circuit": "Placa de circuito",
+  "pattern_flames": "Chamas"
 }

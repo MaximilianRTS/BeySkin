@@ -8,7 +8,7 @@ import { newDesign, type Design } from '@/lib/model'
 import { useEditorStore } from '@/stores/editor'
 import { useLibraryStore } from '@/stores/library'
 import { toast } from '@/lib/toast'
-import { getTemplate } from '@/templates'
+import { getTemplate, templateName } from '@/templates'
 import Icon from '@/components/common/Icon.vue'
 
 /** Opens a design from a share link. Everything happens locally in the browser. */
@@ -61,7 +61,7 @@ function saveToLibrary() {
     </div>
     <div v-else-if="design" class="card box">
       <p class="eyebrow">{{ t('share.received') }}</p>
-      <h1>{{ design.name || t(`templates.${getTemplate(design.templateId).i18nKey}`) }}</h1>
+      <h1>{{ design.name || templateName(t, getTemplate(design.templateId)) }}</h1>
       <p class="muted">{{ t(`templates.${getTemplate(design.templateId).i18nKey}`) }} · {{ getTemplate(design.templateId).widthMm }} × {{ getTemplate(design.templateId).heightMm }} mm</p>
       <div class="preview">
         <img v-if="preview" :src="preview" :alt="t('share.preview_alt')" />

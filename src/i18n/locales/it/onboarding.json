@@ -1,0 +1,13 @@
+{
+  "progress": "Passo {n} di {total}",
+  "step_template_title": "Scegli un modello",
+  "step_template_text": "Per prima cosa scegli per cosa stai creando – Battle Pass, Gear Chip e altro. Dimensioni e linea di taglio si adattano da sole. Sul telefono trovi i modelli nella scheda «{tab}».",
+  "step_add_title": "Aggiungi immagini e testo",
+  "step_add_text": "Con «{image}» carichi una foto o un logo; accanto aggiungi testo, sticker e riempimenti. Sposta, ruota e ridimensiona direttamente sull’etichetta.",
+  "step_print_title": "Stampa ed esporta",
+  "step_print_text": "Tutto viene salvato automaticamente in «{library}». Lì imposti le quantità e crei il foglio di stampa in PDF. Con «{export}» ottieni un singolo PNG o la linea di taglio in SVG.",
+  "skip": "Salta",
+  "back": "Indietro",
+  "next": "Avanti",
+  "done": "Fatto"
+}

@@ -1,0 +1,13 @@
+{
+  "progress": "Paso {n} de {total}",
+  "step_template_title": "Elige una plantilla",
+  "step_template_text": "Primero elige para qué diseñas – Battle Pass, Gear Chip y más. El tamaño y la línea de corte se ajustan solos. En el móvil encontrarás las plantillas en la pestaña «{tab}».",
+  "step_add_title": "Añade imágenes y texto",
+  "step_add_text": "Con «{image}» subes una foto o un logo; al lado añades texto, stickers y rellenos. Mueve, gira y escala directamente sobre la etiqueta.",
+  "step_print_title": "Imprimir y exportar",
+  "step_print_text": "Todo se guarda automáticamente en «{library}». Allí defines la cantidad y creas la hoja de impresión en PDF. Con «{export}» obtienes un PNG suelto o la línea de corte en SVG.",
+  "skip": "Omitir",
+  "back": "Atrás",
+  "next": "Siguiente",
+  "done": "Listo"
+}

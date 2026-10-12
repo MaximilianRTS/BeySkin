@@ -1,4 +1,5 @@
 /// <reference types="vite/client" />
+/// <reference types="vite-plugin-pwa/vue" />
 
 interface ImportMetaEnv {
   /** Contact e-mail shown in the legal notice and report dialog. */

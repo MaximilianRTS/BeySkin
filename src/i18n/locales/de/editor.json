@@ -25,7 +25,7 @@
   "empty_hint": "Bild hierher ziehen, einfügen (Strg+V) oder oben auf „Bild“ klicken",
   "drop_here": "Bilder hier ablegen",
   "import_failed": "{n} Datei(en) konnten nicht gelesen werden.",
-  "shortcuts": "Tipps: Durchsichtige Stellen sind durchklickbar · Alt+Klick = Ebene darunter wählen · Doppelklick auf Text zum Bearbeiten · Pfeiltasten verschieben (Shift = 5 mm) · [ ] = Ebene nach hinten/vorne · Strg+C/V kopieren/einfügen · Strg+Z/Y · Strg+D duplizieren · Entf löschen · Strg+S speichern · Leertaste + Ziehen = Ansicht verschieben",
+  "shortcuts": "Tipps: Durchsichtige Stellen sind durchklickbar · Shift/Strg+Klick = zur Auswahl hinzufügen/entfernen · Shift+Ziehen auf freier Fläche = Bereich auswählen · Strg+A alles auswählen · ein Klick wählt die ganze Gruppe, Doppelklick = einzelnes Element · Alt+Klick = Ebene darunter / einzelnes Element · Doppelklick auf Text zum Bearbeiten · Pfeiltasten verschieben (Shift = 5 mm) · [ ] = Ebene nach hinten/vorne · Strg+C/V kopieren/einfügen · Strg+G gruppieren · Strg+Shift+G Gruppierung aufheben · Strg+Z/Y · Strg+D duplizieren · Entf löschen · Strg+S speichern · Leertaste + Ziehen = Ansicht verschieben · Alt beim Ziehen = ohne Einrasten",
   "no_layers": "Noch keine Ebenen. Füge ein Bild, einen Text oder einen Hintergrund hinzu.",
   "rename": "Umbenennen",
   "rename_hint": "Doppelklick zum Umbenennen",

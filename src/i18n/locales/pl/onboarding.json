@@ -1,0 +1,13 @@
+{
+  "progress": "Krok {n} z {total}",
+  "step_template_title": "Wybierz szablon",
+  "step_template_text": "Najpierw wybierz, co projektujesz – Battle Pass, Gear Chip i inne. Rozmiar i linia cięcia dopasują się automatycznie. Na telefonie szablony znajdziesz w zakładce „{tab}”.",
+  "step_add_title": "Dodaj obrazy i tekst",
+  "step_add_text": "Przyciskiem „{image}” wgrasz zdjęcie lub logo, obok dodasz tekst, naklejki i wypełnienia. Przesuwaj, obracaj i skaluj bezpośrednio na etykiecie.",
+  "step_print_title": "Drukuj i eksportuj",
+  "step_print_text": "Wszystko zapisuje się automatycznie w „{library}”. Tam ustawisz liczbę sztuk i utworzysz arkusz do druku jako PDF. Przez „{export}” pobierzesz pojedynczy PNG lub linię cięcia jako SVG.",
+  "skip": "Pomiń",
+  "back": "Wstecz",
+  "next": "Dalej",
+  "done": "Gotowe"
+}

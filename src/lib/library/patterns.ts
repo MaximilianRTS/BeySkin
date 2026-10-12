@@ -24,6 +24,12 @@ export const PATTERN_IDS = [
   'grid',
   'rays',
   'scales',
+  'camo',
+  'lightning',
+  'stars',
+  'shards',
+  'circuit',
+  'flames',
 ] as const
 export type PatternId = (typeof PATTERN_IDS)[number]
 
@@ -40,6 +46,19 @@ function rng(seed: number): () => number {
     t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296
   }
+}
+
+/** Cells per period of the scattered patterns below: content repeats every CELLS tiles. */
+const CELLS = 6
+
+/**
+ * PRNG for lattice cell (i, j). Wraps the indices every CELLS cells, so painters
+ * built on it are periodic with CELLS * s and can be drawn as a tiled CanvasPattern.
+ */
+function cellRng(i: number, j: number, seed: number): () => number {
+  const wi = ((i % CELLS) + CELLS) % CELLS
+  const wj = ((j % CELLS) + CELLS) % CELLS
+  return rng(seed + wi * 7919 + wj * 104729)
 }
 
 interface Frame {
@@ -314,6 +333,294 @@ const scales: Painter = (ctx, f) => {
   }
 }
 
+// The scattered patterns below draw one motif per lattice cell from cellRng(),
+// so they repeat every CELLS cells and are tiled like the regular lattices.
+
+/** Tile size floor for the scattered patterns: bounds the cell count when drawn directly. */
+const scatterTile = (s: number, R: number) => Math.max(s, R / 60)
+
+/** Multiplies the current alpha (keeps the layer opacity set by the caller). */
+function withAlpha(ctx: Canvas2D, base: number, a: number) {
+  ctx.globalAlpha = base * a
+}
+
+/** Smooth closed blob through k jittered points (quadratic curves through the edge midpoints). */
+function blob(ctx: Canvas2D, cx: number, cy: number, rx: number, ry: number, rot: number, rand: () => number) {
+  const k = 9
+  const cs = Math.cos(rot)
+  const sn = Math.sin(rot)
+  const pts: [number, number][] = []
+  for (let i = 0; i < k; i++) {
+    const a = (i / k) * TAU
+    const f = 0.55 + rand() * 0.7
+    const x = Math.cos(a) * rx * f
+    const y = Math.sin(a) * ry * f
+    pts.push([cx + x * cs - y * sn, cy + x * sn + y * cs])
+  }
+  const mid = (p: [number, number], q: [number, number]) => [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2] as const
+  const m0 = mid(pts[k - 1], pts[0])
+  ctx.moveTo(m0[0], m0[1])
+  for (let i = 0; i < k; i++) {
+    const m = mid(pts[i], pts[(i + 1) % k])
+    ctx.quadraticCurveTo(pts[i][0], pts[i][1], m[0], m[1])
+  }
+  ctx.closePath()
+}
+
+const camo: Painter = (ctx, f) => {
+  const { R } = f
+  const s = Math.max(f.s, R / 30) // up to eight blobs per cell: fewer, larger cells
+  const n = Math.ceil(R / s) + 2
+  const base = ctx.globalAlpha
+  ctx.fillStyle = f.color
+  // Three tones (alpha steps of the pattern colour); every spot is a cluster of
+  // overlapping blobs, which gives the irregular woodland silhouettes.
+  const passes = [
+    [0.4, 0xca40, 0.35, 0.5, 3],
+    [0.72, 0xca41, 0.45, 0.42, 3],
+    [1, 0xca42, 0.6, 0.32, 2],
+  ] as const
+  for (const [alpha, seed, skip, size, parts] of passes) {
+    withAlpha(ctx, base, alpha)
+    ctx.beginPath()
+    for (let j = -n; j <= n; j++) {
+      for (let i = -n; i <= n; i++) {
+        const rand = cellRng(i, j, seed)
+        if (rand() < skip) continue
+        let cx = (i + rand()) * s
+        let cy = (j + rand()) * s
+        const rot = (rand() - 0.5) * 0.8
+        for (let p = 0; p < parts; p++) {
+          const r = s * size * (0.7 + rand() * 0.6)
+          blob(ctx, cx, cy, r * 1.5, r * 0.85, rot + (rand() - 0.5) * 0.6, rand)
+          cx += (rand() - 0.3) * s * 0.7
+          cy += (rand() - 0.5) * s * 0.45
+        }
+      }
+    }
+    ctx.fill()
+  }
+  ctx.globalAlpha = base
+}
+
+/** Lightning bolt outline, height 1, centred on the origin. */
+const BOLT: [number, number][] = [
+  [-0.06, -0.5],
+  [0.27, -0.5],
+  [0.07, -0.1],
+  [0.29, -0.1],
+  [-0.17, 0.5],
+  [-0.02, 0.05],
+  [-0.24, 0.05],
+]
+
+const lightning: Painter = (ctx, f) => {
+  const { R } = f
+  const s = scatterTile(f.s, R)
+  const n = Math.ceil(R / s) + 2
+  ctx.fillStyle = f.color
+  ctx.beginPath()
+  for (let j = -n; j <= n; j++) {
+    for (let i = -n; i <= n; i++) {
+      const rand = cellRng(i, j, 0xb017)
+      const size = s * (0.55 + rand() * 0.35)
+      const a = 0.3 + (rand() - 0.5) * 0.9 // mostly leaning forward
+      const cx = (i + 0.5 + (j & 1) * 0.5 + (rand() - 0.5) * 0.25) * s
+      const cy = (j + 0.5 + (rand() - 0.5) * 0.25) * s
+      const cs = Math.cos(a)
+      const sn = Math.sin(a)
+      BOLT.forEach(([bx, by], k) => {
+        const x = cx + (bx * cs - by * sn) * size
+        const y = cy + (bx * sn + by * cs) * size
+        if (k === 0) ctx.moveTo(x, y)
+        else ctx.lineTo(x, y)
+      })
+      ctx.closePath()
+    }
+  }
+  ctx.fill()
+}
+
+const stars: Painter = (ctx, f) => {
+  const { R } = f
+  const s = scatterTile(f.s, R)
+  const n = Math.ceil(R / s) + 2
+  const dot = (x: number, y: number, r: number) => {
+    ctx.moveTo(x + r, y)
+    ctx.arc(x, y, r, 0, TAU)
+  }
+  ctx.fillStyle = f.color
+  ctx.beginPath()
+  for (let j = -n; j <= n; j++) {
+    for (let i = -n; i <= n; i++) {
+      const rand = cellRng(i, j, 0x57a2)
+      const cx = (i + 0.2 + rand() * 0.6) * s
+      const cy = (j + 0.2 + rand() * 0.6) * s
+      const kind = rand()
+      if (kind < 0.55) {
+        // five-pointed star
+        const ro = s * (0.14 + rand() * 0.2)
+        const rot = rand() * TAU
+        for (let k = 0; k < 10; k++) {
+          const a = rot + (k / 10) * TAU
+          const r = k & 1 ? ro * 0.42 : ro
+          if (k === 0) ctx.moveTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r)
+          else ctx.lineTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r)
+        }
+        ctx.closePath()
+      } else if (kind < 0.85) {
+        // four-pointed sparkle with concave sides
+        const r = s * (0.12 + rand() * 0.16)
+        ctx.moveTo(cx, cy - r)
+        ctx.quadraticCurveTo(cx + r * 0.12, cy - r * 0.12, cx + r, cy)
+        ctx.quadraticCurveTo(cx + r * 0.12, cy + r * 0.12, cx, cy + r)
+        ctx.quadraticCurveTo(cx - r * 0.12, cy + r * 0.12, cx - r, cy)
+        ctx.quadraticCurveTo(cx - r * 0.12, cy - r * 0.12, cx, cy - r)
+        ctx.closePath()
+      } else {
+        dot(cx, cy, s * 0.06)
+      }
+      if (rand() < 0.5) dot((i + rand()) * s, (j + rand()) * s, s * 0.035)
+    }
+  }
+  ctx.fill()
+}
+
+/** Low-poly shards: a jittered triangle lattice, triangles shaded in four alpha steps. */
+const shards: Painter = (ctx, f) => {
+  const { R } = f
+  const s = scatterTile(f.s, R)
+  const n = Math.ceil(R / s) + 2
+  const vertex = (i: number, j: number): [number, number] => {
+    const r = cellRng(i, j, 0x5a4d)
+    return [(i + (r() - 0.5) * 0.5) * s, (j + (r() - 0.5) * 0.5) * s]
+  }
+  const LEVELS = [0.18, 0.4, 0.7, 1]
+  const buckets: [number, number][][][] = LEVELS.map(() => [])
+  for (let j = -n; j < n; j++) {
+    for (let i = -n; i < n; i++) {
+      const a = vertex(i, j)
+      const b = vertex(i + 1, j)
+      const c = vertex(i + 1, j + 1)
+      const d = vertex(i, j + 1)
+      const rand = cellRng(i, j, 0x5a4e)
+      const tris = rand() < 0.5 ? [[a, b, c], [a, c, d]] : [[a, b, d], [b, c, d]]
+      for (const tri of tris) {
+        const v = rand()
+        if (v < 0.3) continue // leave some background showing
+        buckets[Math.min(LEVELS.length - 1, Math.floor(((v - 0.3) / 0.7) * LEVELS.length))].push(tri)
+      }
+    }
+  }
+  const base = ctx.globalAlpha
+  ctx.fillStyle = f.color
+  LEVELS.forEach((level, k) => {
+    if (!buckets[k].length) return
+    withAlpha(ctx, base, level)
+    ctx.beginPath()
+    for (const [p, q, r] of buckets[k]) {
+      ctx.moveTo(p[0], p[1])
+      ctx.lineTo(q[0], q[1])
+      ctx.lineTo(r[0], r[1])
+      ctx.closePath()
+    }
+    ctx.fill()
+  })
+  ctx.globalAlpha = base
+}
+
+/** Circuit board: traces between lattice nodes (straight or 45 degrees) plus round vias. */
+const circuit: Painter = (ctx, f) => {
+  const { R } = f
+  const s = scatterTile(f.s, R)
+  const n = Math.ceil(R / s) + 2
+  const vias: [number, number][] = []
+  ctx.strokeStyle = f.color
+  ctx.lineWidth = Math.max(0.05, s * 0.1)
+  ctx.lineJoin = 'round'
+  ctx.lineCap = 'round'
+  ctx.beginPath()
+  for (let j = -n; j <= n; j++) {
+    for (let i = -n; i <= n; i++) {
+      const rand = cellRng(i, j, 0xc1c0)
+      const x = i * s
+      const y = j * s
+      const r = rand()
+      if (r < 0.36) {
+        ctx.moveTo(x, y)
+        ctx.lineTo(x + s, y)
+      } else if (r < 0.56) {
+        ctx.moveTo(x, y)
+        ctx.lineTo(x, y + s)
+      } else if (r < 0.76) {
+        // straight, then a 45 degree jog to the row below or above
+        const dy = r < 0.66 ? s : -s
+        ctx.moveTo(x, y)
+        ctx.lineTo(x + s * 0.5, y)
+        ctx.lineTo(x + s, y + dy * 0.5)
+        ctx.lineTo(x + s, y + dy)
+      }
+      if (rand() < 0.25) vias.push([x, y])
+    }
+  }
+  ctx.stroke()
+  const pad = s * 0.17
+  ctx.fillStyle = f.color
+  ctx.beginPath()
+  for (const [x, y] of vias) {
+    ctx.moveTo(x + pad, y)
+    ctx.arc(x, y, pad, 0, TAU)
+  }
+  ctx.fill()
+  ctx.fillStyle = f.color2
+  ctx.beginPath()
+  for (const [x, y] of vias) {
+    ctx.moveTo(x + pad * 0.45, y)
+    ctx.arc(x, y, pad * 0.45, 0, TAU)
+  }
+  ctx.fill()
+}
+
+/** Flame spacing relative to the tile size: [tongue spacing, band height]. */
+const FLAME_W = 1
+const FLAME_ROW = 1.2
+
+/**
+ * Stacked bands whose top edge is a row of flame tongues, alternating between the
+ * pattern and the background colour, so every band shows flames licking upwards.
+ */
+const flames: Painter = (ctx, f) => {
+  const { R } = f
+  const s = Math.max(f.s, R / 40) // a few curves per tongue: keep the count sane
+  const w = s * FLAME_W
+  const rh = s * FLAME_ROW
+  const rows = Math.ceil(R / rh) + 3
+  const cols = Math.ceil(R / w) + 2
+  const left = -cols * w - w / 2
+  const right = cols * w + w / 2
+  // Top to bottom: each band covers the lower part of the one above.
+  for (let j = -rows; j <= rows; j++) {
+    const y = j * rh
+    const off = (j & 1) * (w / 2)
+    ctx.fillStyle = j & 1 ? f.color2 : f.color
+    ctx.beginPath()
+    ctx.moveTo(left + off, y + rh * 2)
+    ctx.lineTo(left + off, y)
+    for (let i = -cols; i <= cols; i++) {
+      const rand = cellRng(i, j, 0xf1a3)
+      const h = rh * (0.75 + rand() * 0.5)
+      const lean = w * (0.15 + rand() * 0.3)
+      const x = i * w + off
+      // up the left flank to the tip, down the hollow right flank to the next valley
+      ctx.bezierCurveTo(x - w * 0.6, y - h * 0.4, x + lean - w * 0.45, y - h * 0.75, x + lean, y - h)
+      ctx.bezierCurveTo(x + lean - w * 0.05, y - h * 0.5, x + w * 0.15, y - h * 0.2, x + w / 2, y)
+    }
+    ctx.lineTo(right + off, y + rh * 2)
+    ctx.closePath()
+    ctx.fill()
+  }
+}
+
 const PAINTERS: Record<PatternId, Painter> = {
   stripes,
   dots,
@@ -327,6 +634,12 @@ const PAINTERS: Record<PatternId, Painter> = {
   grid,
   rays,
   scales,
+  camo,
+  lightning,
+  stars,
+  shards,
+  circuit,
+  flames,
 }
 
 /**
@@ -342,12 +655,22 @@ const PERIOD: Partial<Record<PatternId, (s: number) => [number, number]>> = {
   zigzag: (s) => [s, s],
   grid: (s) => [s, s],
   scales: (s) => [s, s],
+  camo: (s) => [CELLS * s, CELLS * s],
+  lightning: (s) => [CELLS * s, CELLS * s],
+  stars: (s) => [CELLS * s, CELLS * s],
+  shards: (s) => [CELLS * s, CELLS * s],
+  circuit: (s) => [CELLS * s, CELLS * s],
+  flames: (s) => [CELLS * FLAME_W * s, CELLS * FLAME_ROW * s],
 }
+
+const SCATTERED: ReadonlySet<PatternId> = new Set(['camo', 'lightning', 'stars', 'shards', 'circuit', 'flames'])
 
 /** Painter-specific minimum tile sizes that depend on the full frame size. */
 function effectiveTile(id: PatternId, s: number, R: number): number {
   if (id === 'hex') return Math.max(s, R / 60)
-  if (id === 'scales') return Math.max(s, R / 40)
+  if (id === 'scales' || id === 'flames') return Math.max(s, R / 40)
+  if (id === 'camo') return Math.max(s, R / 30)
+  if (SCATTERED.has(id)) return scatterTile(s, R)
   return s
 }
 

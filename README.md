@@ -14,22 +14,25 @@ BEYBLADE is a trademark of its respective owners and is only used to describe co
 ## Features
 
 **Editor**
-- Templates: Battle Pass label (traced 1:1 from the original) and round gear chip sticker (Ø 17.1 mm) with recolourable vector frames – both measured on the real parts. Each template keeps its own draft; designs can be transferred between templates.
-- Layers: images, text (outline, fonts, alignment), solid/gradient backgrounds. Blend modes, opacity, flip, lock, hide, drag-to-reorder.
-- Direct manipulation on the canvas: move, scale and rotate handles, pinch & two-finger rotate on touch, snapping to the centre, zoom to cursor.
-- Undo/redo, keyboard shortcuts, drop/paste images, automatic save (IndexedDB), DPI warning for low-resolution images.
+- Templates: Battle Pass label (traced 1:1 from the original) and round gear chip sticker (Ø 17.1 mm) with recolourable vector frames – both measured on the real parts – plus player card (ID-1), launcher and deck-case stickers (estimated sizes), round stickers Ø 25/40 mm and **custom sizes** (rectangle, rounded rectangle, ellipse). Each template keeps its own draft; designs can be transferred between templates. Ready-made example designs as starting points.
+- Layers: images (brightness, contrast, saturation, hue, greyscale, background removal by colour key), text (outline, letter spacing, text on an arc, drop shadow, glow, 13 fonts), solid/gradient/pattern backgrounds. Blend modes, opacity, flip, lock, hide, drag-to-reorder.
+- Multi-selection (Shift/Ctrl+click, Shift+drag marquee, Ctrl+A), groups (Ctrl+G), align & distribute, colour fields with eyedropper and recent colours.
+- Direct manipulation on the canvas: move, scale and rotate handles, pinch & two-finger rotate on touch, snapping to the label, the safe zone and other layers, optional safe-zone overlay, zoom to cursor.
+- Undo/redo, keyboard shortcuts, drop/paste images, automatic save (IndexedDB), DPI warning for low-resolution images, short onboarding tour.
+- Installable PWA – works offline after the first visit.
 
 **Output**
-- Print sheet PDF (A4/Letter, 300/600 dpi): packs any number of labels and stickers of mixed sizes onto as few pages as possible (small stickers fill the gaps next to large labels), cut line, crop marks, shape-following bleed, calibration ruler and printer scale correction.
+- Print sheet PDF (A4/Letter, 300/600 dpi): packs any number of labels and stickers of mixed sizes onto as few pages as possible (small stickers fill the gaps next to large labels), cut line, crop marks, shape-following bleed, calibration ruler, printer scale correction with named printer profiles and a printer test page.
 - PNG (300/600 dpi, transparent) and SVG with vector cut path for cutting plotters (Cricut, Silhouette, Brother).
 - Project backup/restore as JSON – also imports V1 (BeyBattlePass) project files.
 
-**Sticker library** – original vector shapes (bolts, flames, bursts, crowns, frames …) and pattern backgrounds (speed lines, hex, carbon, halftone …), free to use.
+**Sticker library** – original vector shapes (bolts, flames, bursts, crowns, frames …) and pattern backgrounds (speed lines, hex, carbon, halftone, camo, lightning, stars, circuit, flames …), free to use.
 
 **3D preview** – live texture on a Blender model of the Battle Pass device (measured with calipers: 128.71 × 33.87 × 20.16 mm).
 
 **Sharing without a server** – nothing is ever uploaded:
 - *Share link*: the design is compressed into the URL fragment (`#/s/…`), which browsers never send to the web server. Uploaded images are left out and become placeholders the recipient fills with their own pictures (remix).
+- *QR code* of the share link (PNG/SVG download) for passing designs phone to phone.
 - *Share file*: PNG or project file via the device's share sheet (Web Share API) or download.
 
 ## No hosting of user content – by design
@@ -87,7 +90,7 @@ Add an entry to `src/templates/index.ts` (use `roundedRect`, `ellipse` or a trac
 ## Credits
 
 - Gear chip frame templates (vectorised in `src/lib/library/chipFrames.ts`): **Blader R** ([u/Dull-Tough-5511](https://www.reddit.com/user/Dull-Tough-5511/)) – all rights remain with the creator.
-- Fonts: Bangers, Russo One, Anton (SIL Open Font License, via Fontsource).
+- Fonts: Bangers, Russo One, Anton, Bungee, Black Ops One, Orbitron, Audiowide, Teko, Press Start 2P (SIL Open Font License, via Fontsource).
 
 ## License
 

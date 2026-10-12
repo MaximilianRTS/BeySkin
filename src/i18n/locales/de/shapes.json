@@ -57,5 +57,11 @@
   "pattern_zigzag": "Zickzack",
   "pattern_grid": "Gitter",
   "pattern_rays": "Strahlen",
-  "pattern_scales": "Drachenschuppen"
+  "pattern_scales": "Drachenschuppen",
+  "pattern_camo": "Tarnmuster",
+  "pattern_lightning": "Blitze",
+  "pattern_stars": "Sterne",
+  "pattern_shards": "Splitter",
+  "pattern_circuit": "Platine",
+  "pattern_flames": "Flammen"
 }

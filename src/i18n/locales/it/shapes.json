@@ -57,5 +57,11 @@
   "pattern_zigzag": "Zigzag",
   "pattern_grid": "Griglia",
   "pattern_rays": "Raggi",
-  "pattern_scales": "Squame di drago"
+  "pattern_scales": "Squame di drago",
+  "pattern_camo": "Mimetico",
+  "pattern_lightning": "Fulmini",
+  "pattern_stars": "Stelle",
+  "pattern_shards": "Schegge",
+  "pattern_circuit": "Circuito stampato",
+  "pattern_flames": "Fiamme"
 }

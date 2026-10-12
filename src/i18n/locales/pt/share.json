@@ -23,5 +23,10 @@
   "has_placeholders": "Contém {n} espaço(s) reservado(s) para imagem – insira suas próprias imagens no editor.",
   "remix": "Abrir no editor",
   "save": "Adicionar aos meus designs",
-  "local_note": "O design é aberto somente no seu navegador. Nada disso fica em um servidor."
+  "local_note": "O design é aberto somente no seu navegador. Nada disso fica em um servidor.",
+  "qr": "Código QR",
+  "qr_alt": "Código QR do link de compartilhamento",
+  "qr_hint": "Escaneie com a câmera do celular para abrir o design lá.",
+  "qr_dense": "Link longo – o código fica muito denso. Se não conseguir escanear, compartilhe o arquivo.",
+  "qr_too_long": "Este link é longo demais para um código QR. Compartilhe o PNG ou o arquivo de projeto."
 }

@@ -57,5 +57,11 @@
   "pattern_zigzag": "Zigzag",
   "pattern_grid": "Quadrillage",
   "pattern_rays": "Rayons",
-  "pattern_scales": "Écailles de dragon"
+  "pattern_scales": "Écailles de dragon",
+  "pattern_camo": "Camouflage",
+  "pattern_lightning": "Éclairs",
+  "pattern_stars": "Étoiles",
+  "pattern_shards": "Éclats",
+  "pattern_circuit": "Circuit imprimé",
+  "pattern_flames": "Flammes"
 }

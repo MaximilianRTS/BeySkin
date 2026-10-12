@@ -10,12 +10,14 @@ import EditorCanvas from '@/components/editor/EditorCanvas.vue'
 import TemplatePicker from '@/components/editor/TemplatePicker.vue'
 import LayerPanel from '@/components/editor/LayerPanel.vue'
 import PropertiesPanel from '@/components/editor/PropertiesPanel.vue'
+import MultiSelectPanel from '@/components/editor/MultiSelectPanel.vue'
 const LibraryDialog = defineAsyncComponent(() => import('@/components/editor/LibraryDialog.vue'))
 import ImagePicker from '@/components/editor/ImagePicker.vue'
 import { ASSET_DRAG_TYPE, listAssets } from '@/lib/assets'
 import { confirmDialog } from '@/lib/confirm'
-import { TEMPLATES } from '@/templates'
+import { templateName, TEMPLATES } from '@/templates'
 import Icon from '@/components/common/Icon.vue'
+import OnboardingTour from '@/components/common/OnboardingTour.vue'
 import type { FrameDef, PatternId, ShapeDef } from '@/lib/library'
 
 const PrintDialog = defineAsyncComponent(() => import('@/components/editor/PrintDialog.vue'))
@@ -59,6 +61,15 @@ function readFlag(key: string): boolean {
 watch(hideOutside, (v) => {
   try {
     localStorage.setItem('hide-outside', v ? '1' : '0')
+  } catch {
+    // ignore
+  }
+})
+/** Show the safe-zone band inside the cut line (remembered per browser). */
+const showSafe = ref(readFlag('safe-zone'))
+watch(showSafe, (v) => {
+  try {
+    localStorage.setItem('safe-zone', v ? '1' : '0')
   } catch {
     // ignore
   }
@@ -182,36 +193,45 @@ function onKey(e: KeyboardEvent) {
   if (isTyping(e.target) || document.querySelector('.dialog-backdrop')) return
   const mod = e.ctrlKey || e.metaKey
   const sel = store.selected
-  if (mod && e.key.toLowerCase() === 'z') {
+  const key = e.key.toLowerCase()
+  if (mod && key === 'z') {
     e.preventDefault()
     if (e.shiftKey) store.redo()
     else store.undo()
-  } else if (mod && e.key.toLowerCase() === 'y') {
+  } else if (mod && key === 'y') {
     e.preventDefault()
     store.redo()
-  } else if (mod && e.key.toLowerCase() === 's') {
+  } else if (mod && key === 's') {
     e.preventDefault()
     void saveNow()
-  } else if (mod && e.key.toLowerCase() === 'c' && sel && !window.getSelection()?.toString()) {
-    if (store.copySelected()) toast(t('editor.copied_layer'), 'info', 1500)
-  } else if (mod && e.key.toLowerCase() === 'd' && sel) {
+  } else if (mod && key === 'a') {
     e.preventDefault()
-    store.duplicateLayer(sel.id)
+    store.selectAll()
+  } else if (mod && key === 'g') {
+    e.preventDefault()
+    if (e.shiftKey) store.ungroupSelected()
+    else store.groupSelected()
+  } else if (mod && key === 'c' && sel && !window.getSelection()?.toString()) {
+    const n = store.copySelected()
+    if (n) toast(n > 1 ? t('selection.copied_n', { n }) : t('editor.copied_layer'), 'info', 1500)
+  } else if (mod && key === 'd' && sel) {
+    e.preventDefault()
+    store.duplicateSelected()
   } else if ((e.key === 'Delete' || e.key === 'Backspace') && sel) {
     e.preventDefault()
-    store.removeLayer(sel.id)
-  } else if ((e.key === '[' || e.key === ']') && sel) {
+    store.removeSelected()
+  } else if ((e.key === '[' || e.key === ']') && sel && store.selectedIds.length === 1) {
     e.preventDefault()
     store.moveLayer(sel.id, store.design.layers.indexOf(sel) + (e.key === ']' ? 1 : -1))
   } else if (e.key === 'Escape') {
-    store.selectedId = null
-  } else if (e.key.startsWith('Arrow') && sel && sel.type !== 'fill' && !sel.locked) {
+    store.clearSelection()
+  } else if (e.key.startsWith('Arrow') && store.movable.length) {
     e.preventDefault()
     const step = e.shiftKey ? 5 : 0.5
-    if (e.key === 'ArrowLeft') sel.x -= step
-    if (e.key === 'ArrowRight') sel.x += step
-    if (e.key === 'ArrowUp') sel.y -= step
-    if (e.key === 'ArrowDown') sel.y += step
+    store.nudgeSelection(
+      e.key === 'ArrowLeft' ? -step : e.key === 'ArrowRight' ? step : 0,
+      e.key === 'ArrowUp' ? -step : e.key === 'ArrowDown' ? step : 0,
+    )
     scheduleCommit()
   } else if (e.key === '+' || e.key === '=') {
     canvasRef.value?.zoomBy(1.25)
@@ -229,9 +249,11 @@ function scheduleCommit() {
   commitTimer = setTimeout(() => store.commit(), 500)
 }
 
-function onEditText(id: string) {
+async function onEditText(id: string) {
   store.selectedId = id
   mobileTab.value = 'props'
+  // The properties panel may only now replace the multi-selection panel.
+  await nextTick()
   void propsRef.value?.focusText()
 }
 
@@ -240,7 +262,7 @@ async function doExport(kind: 'png300' | 'png600' | 'svg') {
   exportOpen.value = false
   if (!store.design.layers.length) return toast(t('library.empty_design'), 'error')
   if (store.design.layers.some((l) => l.type === 'image' && !l.assetId)) toast(t('editor.placeholders_export'), 'info', 5000)
-  const base = safeFilename(store.design.name || t(`templates.${store.template.i18nKey}`))
+  const base = safeFilename(store.design.name || templateName(t, store.template))
   try {
     if (kind === 'svg') saveBlob(await exportCutSvg(store.design, 300, 0), `${base}-cut.svg`)
     else saveBlob(await exportPng(store.design, kind === 'png600' ? 600 : 300), `${base}.png`)
@@ -307,7 +329,7 @@ onBeforeUnmount(() => {
   >
     <!-- Left: templates + layers -->
     <aside class="side left card" :class="{ 'mobile-hidden': mobileTab !== 'templates' && mobileTab !== 'layers' }">
-      <section :class="{ 'mobile-hidden': mobileTab !== 'templates' }">
+      <section data-tour="templates" :class="{ 'mobile-hidden': mobileTab !== 'templates' }">
         <h2 class="panel-title">{{ t('editor.template') }}</h2>
         <TemplatePicker v-model="templateId" />
         <p v-if="!store.template.measured" class="estimate muted">
@@ -334,7 +356,7 @@ onBeforeUnmount(() => {
         <div class="tool-group" role="group" :aria-label="t('editor.add_group')">
           <span class="group-label">{{ t('editor.add_group') }}</span>
           <div class="image-menu">
-            <button class="btn add" :class="{ active: showImages }" :aria-expanded="showImages" @click="onImageButton">
+            <button class="btn add" data-tour="add-image" :class="{ active: showImages }" :aria-expanded="showImages" @click="onImageButton">
               <Icon name="plus" :size="14" class="plus" /><Icon name="image" /> {{ t('editor.add_image') }}
             </button>
             <ImagePicker v-if="showImages" @upload="uploadFromPicker" @close="showImages = false" />
@@ -361,6 +383,9 @@ onBeforeUnmount(() => {
         <button class="btn" :class="{ active: hideOutside }" :aria-pressed="hideOutside" :title="t('editor.hide_outside_hint')" @click="hideOutside = !hideOutside">
           <Icon name="crop" /> {{ t('editor.hide_outside') }}
         </button>
+        <button class="btn" :class="{ active: showSafe }" :aria-pressed="showSafe" :title="t('selection.safe_zone_hint')" @click="showSafe = !showSafe">
+          <Icon name="shield" /> {{ t('selection.safe_zone') }}
+        </button>
         <span class="spacer" />
         <button class="btn" :class="{ active: show3d }" :aria-pressed="show3d" @click="show3d = !show3d"><Icon name="cube" /> 3D</button>
         <div class="export-menu">
@@ -380,7 +405,7 @@ onBeforeUnmount(() => {
         <input
           class="doc-name"
           :value="store.design.name"
-          :placeholder="t(`templates.${store.template.i18nKey}`)"
+          :placeholder="templateName(t, store.template)"
           :aria-label="t('library.name_label')"
           maxlength="60"
           @input="setDesignName"
@@ -396,7 +421,7 @@ onBeforeUnmount(() => {
         <button class="btn btn-sm" :title="t('library.new_design')" @click="newDesign">
           <Icon name="plus" :size="14" /> {{ t('library.new') }}
         </button>
-        <button class="btn btn-sm" :title="t('library.title')" @click="showLibrary = true">
+        <button class="btn btn-sm" data-tour="library" :title="t('library.title')" @click="showLibrary = true">
           <Icon name="folder" :size="14" /> {{ t('library.title') }}
           <span v-if="library.entries.length" class="count-pill">{{ library.entries.length }}</span>
         </button>
@@ -412,7 +437,7 @@ onBeforeUnmount(() => {
           </button>
         </div>
         <div class="canvas-card card" :class="{ mini: show3d }">
-          <EditorCanvas ref="canvasRef" :show-bleed="showBleed" :hide-outside="hideOutside" @edit-text="onEditText" />
+          <EditorCanvas ref="canvasRef" :show-bleed="showBleed" :hide-outside="hideOutside" :show-safe="showSafe" @edit-text="onEditText" />
           <template v-if="!show3d">
             <div v-if="!store.design.layers.length" class="empty-hint">
               <Icon name="upload" :size="28" />
@@ -431,7 +456,8 @@ onBeforeUnmount(() => {
     <!-- Right: properties only (saving lives in the toolbar + "My designs" window) -->
     <aside class="side right card" :class="{ 'mobile-hidden': mobileTab !== 'props' }">
       <h2 class="panel-title">{{ t('editor.properties') }}</h2>
-      <PropertiesPanel ref="propsRef" />
+      <MultiSelectPanel v-if="store.selectedIds.length > 1" />
+      <PropertiesPanel v-else ref="propsRef" />
     </aside>
 
     <nav class="mobile-tabs" :aria-label="t('editor.panels')">
@@ -447,6 +473,7 @@ onBeforeUnmount(() => {
     <ShareDialog v-if="showShare" :design="store.design" @close="showShare = false" />
     <StickerPicker v-if="showStickers" :initial-tab="store.template.previewModel === 'chip' ? 'frames' : 'shapes'"
       @shape="onPickShape" @pattern="onPickPattern" @frame="onPickFrame" @close="showStickers = false" />
+    <OnboardingTour />
   </div>
 </template>
 

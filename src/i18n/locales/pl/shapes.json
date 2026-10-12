@@ -57,5 +57,11 @@
   "pattern_zigzag": "Zygzak",
   "pattern_grid": "Siatka",
   "pattern_rays": "Promienie",
-  "pattern_scales": "Smocze łuski"
+  "pattern_scales": "Smocze łuski",
+  "pattern_camo": "Moro",
+  "pattern_lightning": "Błyskawice",
+  "pattern_stars": "Gwiazdy",
+  "pattern_shards": "Odłamki",
+  "pattern_circuit": "Obwód drukowany",
+  "pattern_flames": "Płomienie"
 }

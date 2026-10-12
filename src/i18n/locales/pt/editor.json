@@ -25,7 +25,7 @@
   "empty_hint": "Solte uma imagem aqui, cole (Ctrl+V) ou clique em “Imagem” acima",
   "drop_here": "Solte as imagens aqui",
   "import_failed": "Não foi possível ler {n} arquivo(s).",
-  "shortcuts": "Dicas: áreas transparentes deixam o clique passar · Alt+clique = escolher a camada de baixo · clique duplo no texto para editar · setas movem (Shift = 5 mm) · [ ] = para trás/frente · Ctrl+C/V copiar/colar · Ctrl+Z/Y · Ctrl+D duplicar · Del excluir · Ctrl+S salvar · Espaço + arrastar = mover a vista",
+  "shortcuts": "Dicas: áreas transparentes deixam o clique passar · Shift/Ctrl+clique = adicionar à/remover da seleção · Shift+arrastar num espaço vazio = selecionar uma área · Ctrl+A selecionar tudo · um clique seleciona o grupo inteiro, clique duplo = um só elemento · Alt+clique = camada de baixo / um só elemento · clique duplo no texto para editar · setas movem (Shift = 5 mm) · [ ] = para trás/frente · Ctrl+C/V copiar/colar · Ctrl+G agrupar · Ctrl+Shift+G desagrupar · Ctrl+Z/Y · Ctrl+D duplicar · Del excluir · Ctrl+S salvar · Espaço + arrastar = mover a vista · Alt ao arrastar = sem encaixe",
   "no_layers": "Ainda não há camadas. Adicione uma imagem, um texto ou um fundo.",
   "rename": "Renomear",
   "rename_hint": "Clique duas vezes para renomear",

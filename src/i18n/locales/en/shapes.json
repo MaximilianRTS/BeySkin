@@ -57,5 +57,11 @@
   "pattern_zigzag": "Zigzag",
   "pattern_grid": "Grid",
   "pattern_rays": "Rays",
-  "pattern_scales": "Dragon scales"
+  "pattern_scales": "Dragon scales",
+  "pattern_camo": "Camouflage",
+  "pattern_lightning": "Lightning bolts",
+  "pattern_stars": "Stars",
+  "pattern_shards": "Shards",
+  "pattern_circuit": "Circuit board",
+  "pattern_flames": "Flames"
 }

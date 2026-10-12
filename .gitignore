@@ -41,3 +41,6 @@ StickerBilder/
 
 # Local tooling
 .claude/
+
+# Generated promo screenshots / social graphics
+promo/

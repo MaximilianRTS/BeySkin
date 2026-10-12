@@ -57,5 +57,11 @@
   "pattern_zigzag": "ジグザグ",
   "pattern_grid": "格子",
   "pattern_rays": "光線",
-  "pattern_scales": "竜のうろこ"
+  "pattern_scales": "竜のうろこ",
+  "pattern_camo": "迷彩",
+  "pattern_lightning": "稲妻",
+  "pattern_stars": "星",
+  "pattern_shards": "破片",
+  "pattern_circuit": "回路基板",
+  "pattern_flames": "炎"
 }

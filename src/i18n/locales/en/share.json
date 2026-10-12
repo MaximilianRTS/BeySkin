@@ -23,5 +23,10 @@
   "has_placeholders": "Contains {n} image placeholder(s) – insert your own pictures in the editor.",
   "remix": "Open in editor",
   "save": "Add to my designs",
-  "local_note": "The design is only opened in your browser. None of it is on a server."
+  "local_note": "The design is only opened in your browser. None of it is on a server.",
+  "qr": "QR code",
+  "qr_alt": "QR code of the share link",
+  "qr_hint": "Scan it with a phone camera to open the design there.",
+  "qr_dense": "Long link – the code is very dense. If scanning fails, share the file instead.",
+  "qr_too_long": "This link is too long for a QR code. Share the PNG or the project file instead."
 }

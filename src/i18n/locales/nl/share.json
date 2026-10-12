@@ -23,5 +23,10 @@
   "has_placeholders": "Bevat {n} afbeeldingsplaats(en) – voeg in de editor je eigen afbeeldingen in.",
   "remix": "Openen in editor",
   "save": "Toevoegen aan mijn ontwerpen",
-  "local_note": "Het ontwerp wordt alleen in je browser geopend. Niets daarvan staat op een server."
+  "local_note": "Het ontwerp wordt alleen in je browser geopend. Niets daarvan staat op een server.",
+  "qr": "QR-code",
+  "qr_alt": "QR-code van de deellink",
+  "qr_hint": "Scan met de camera van je telefoon om het ontwerp daar te openen.",
+  "qr_dense": "Lange link – de code is erg dicht. Lukt het scannen niet, deel dan liever het bestand.",
+  "qr_too_long": "Deze link is te lang voor een QR-code. Deel in plaats daarvan de PNG of het projectbestand."
 }

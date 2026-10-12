@@ -25,7 +25,7 @@
   "empty_hint": "Arrastra una imagen aquí, pégala (Ctrl+V) o haz clic en «Imagen» arriba",
   "drop_here": "Suelta las imágenes aquí",
   "import_failed": "No se pudieron leer {n} archivo(s).",
-  "shortcuts": "Consejos: las zonas transparentes se pueden atravesar con clic · Alt+clic = elegir la capa de abajo · doble clic en un texto para editarlo · flechas para mover (Shift = 5 mm) · [ ] = atrás/adelante · Ctrl+C/V copiar/pegar · Ctrl+Z/Y · Ctrl+D duplicar · Supr borrar · Ctrl+S guardar · Espacio + arrastrar = mover vista",
+  "shortcuts": "Consejos: las zonas transparentes se pueden atravesar con clic · Shift/Ctrl+clic = añadir/quitar de la selección · Shift+arrastrar en un espacio vacío = seleccionar un área · Ctrl+A seleccionar todo · un clic selecciona todo el grupo, doble clic = un solo elemento · Alt+clic = capa de abajo / un solo elemento · doble clic en un texto para editarlo · flechas para mover (Shift = 5 mm) · [ ] = atrás/adelante · Ctrl+C/V copiar/pegar · Ctrl+G agrupar · Ctrl+Shift+G desagrupar · Ctrl+Z/Y · Ctrl+D duplicar · Supr borrar · Ctrl+S guardar · Espacio + arrastrar = mover vista · Alt al arrastrar = sin ajuste",
   "no_layers": "Aún no hay capas. Añade una imagen, un texto o un fondo.",
   "rename": "Renombrar",
   "rename_hint": "Haz doble clic para renombrar",

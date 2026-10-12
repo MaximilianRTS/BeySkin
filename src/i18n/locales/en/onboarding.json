@@ -1,0 +1,13 @@
+{
+  "progress": "Step {n} of {total}",
+  "step_template_title": "Choose a template",
+  "step_template_text": "First pick what you are designing for – Battle Pass, Gear Chip and more. Size and cut line adjust automatically. On a phone the templates are in the “{tab}” tab.",
+  "step_add_title": "Add pictures and text",
+  "step_add_text": "Use “{image}” to upload a photo or logo; next to it you add text, stickers and fills. Move, rotate and resize right on the label.",
+  "step_print_title": "Print and export",
+  "step_print_text": "Everything is saved automatically in “{library}”. Open it to set quantities and create the print sheet as a PDF. “{export}” gives you a single PNG or the cut line as SVG.",
+  "skip": "Skip",
+  "back": "Back",
+  "next": "Next",
+  "done": "Done"
+}
