@@ -10,5 +10,6 @@
   "enlarge": "Ingrandisci",
   "shrink": "Riduci",
   "speed": "Velocità di rotazione",
-  "direction": "Inverti il senso di rotazione"
+  "direction": "Inverti il senso di rotazione",
+  "body_color": "Colore del chip"
 }

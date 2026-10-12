@@ -1,4 +1,4 @@
-import { FRAME_DEFAULT_COLORS, newDesign, uid, type BlendMode, type Design, type FillLayer, type FrameLayer, type ImageLayer, type Layer, type ShapeLayer, type TextLayer } from './model'
+import { FRAME_DEFAULT_COLORS, newDesign, scaleLayers, uid, type BlendMode, type Design, type FillLayer, type FrameLayer, type ImageLayer, type Layer, type ShapeLayer, type TextLayer } from './model'
 import type { PatternId } from './library'
 import { getTemplate } from '@/templates'
 
@@ -271,9 +271,24 @@ export function getExample(id: string): ExampleDef | undefined {
   return EXAMPLES.find((e) => e.id === id)
 }
 
-/** A fresh, independent design (new design and layer ids) built from an example. */
-export function createExample(ex: ExampleDef, texts: ExampleTexts, name = ''): Design {
-  const d = newDesign(ex.templateId, name)
+/**
+ * Template an example opens in: the current one when it is the same kind of part as the
+ * example's own template (e.g. a Gear Chip example on the Lock Chip), else the example's.
+ */
+export function exampleTemplateId(ex: ExampleDef, currentId: string): string {
+  const own = getTemplate(ex.templateId)
+  const cur = getTemplate(currentId)
+  const sameKind = cur.previewModel === own.previewModel && cur.previewModel !== 'flat' && !cur.custom
+  return sameKind ? cur.id : own.id
+}
+
+/**
+ * A fresh, independent design (new design and layer ids) built from an example,
+ * scaled to `templateId` when that has a different size.
+ */
+export function createExample(ex: ExampleDef, texts: ExampleTexts, name = '', templateId = ex.templateId): Design {
+  const d = newDesign(templateId, name)
   d.layers = ex.build(texts)
+  if (templateId !== ex.templateId) scaleLayers(d.layers, getTemplate(ex.templateId), getTemplate(templateId))
   return d
 }

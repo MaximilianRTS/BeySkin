@@ -10,5 +10,6 @@
   "enlarge": "Vergrößern",
   "shrink": "Verkleinern",
   "speed": "Drehgeschwindigkeit",
-  "direction": "Drehrichtung umkehren"
+  "direction": "Drehrichtung umkehren",
+  "body_color": "Chip-Farbe"
 }

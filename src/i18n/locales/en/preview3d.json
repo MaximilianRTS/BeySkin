@@ -10,5 +10,6 @@
   "enlarge": "Enlarge",
   "shrink": "Shrink",
   "speed": "Spin speed",
-  "direction": "Reverse spin direction"
+  "direction": "Reverse spin direction",
+  "body_color": "Chip colour"
 }

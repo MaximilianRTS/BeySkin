@@ -243,6 +243,26 @@ export function normalizeDesign(d: Design): Design {
   return d
 }
 
+/**
+ * Moves and scales layers (in place) from one label size to another: positions
+ * follow the label proportionally, sizes keep their aspect ratio and fit.
+ */
+export function scaleLayers(layers: Layer[], from: LabelSize, to: LabelSize): void {
+  const f = Math.min(to.widthMm / from.widthMm, to.heightMm / from.heightMm)
+  for (const l of layers) {
+    if (l.type === 'fill') continue
+    l.x = (l.x / from.widthMm) * to.widthMm
+    l.y = (l.y / from.heightMm) * to.heightMm
+    if (l.type === 'text') l.fontSize *= f
+    else l.width *= f
+  }
+}
+
+interface LabelSize {
+  widthMm: number
+  heightMm: number
+}
+
 /** Deep copy that also strips Vue/Pinia proxies. Designs are plain JSON by construction. */
 export function cloneDesign(design: Design): Design {
   return JSON.parse(JSON.stringify(design)) as Design

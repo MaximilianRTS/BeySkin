@@ -13,7 +13,8 @@ import {
   templateName,
   type StickerTemplate,
 } from '@/templates'
-import { EXAMPLES, createExample, type ExampleDef } from '@/lib/examples'
+import { LOCK_CHIP_TAB_R, lockChipOutline } from '@/templates/lockChip'
+import { EXAMPLES, createExample, exampleTemplateId, type ExampleDef } from '@/lib/examples'
 import { renderDesignCanvas } from '@/lib/render'
 import { confirmDialog } from '@/lib/confirm'
 import { useEditorStore } from '@/stores/editor'
@@ -41,7 +42,16 @@ function viewBox(tp: StickerTemplate) {
 }
 const name = (tp: StickerTemplate) => templateName(t, tp)
 
+/** Lock Chip icon: the tabbed head around the round sticker (mm, centred on the origin). */
+const LOCK_HEAD = lockChipOutline(96, false)
+  .map(([x, y]) => `${x.toFixed(2)},${y.toFixed(2)}`)
+  .join(' ')
+const LOCK_VIEWBOX = `${-LOCK_CHIP_TAB_R - 0.6} ${-LOCK_CHIP_TAB_R - 0.6} ${LOCK_CHIP_TAB_R * 2 + 1.2} ${LOCK_CHIP_TAB_R * 2 + 1.2}`
+
 // ---------- custom sizes ----------
+
+/** Custom sizes are switched off in the UI for now; designs that use one still open. */
+const CUSTOM_SIZES_ENABLED = false
 
 const RECENT_KEY = 'customSizes'
 const RECENT_MAX = 6
@@ -56,6 +66,10 @@ function loadRecent(): string[] {
 }
 const recent = ref<string[]>(loadRecent())
 const recentTemplates = computed(() => recent.value.map((id) => getTemplate(id)))
+/** While switched off, only an open custom-size design is listed (as the active entry). */
+const customTemplates = computed(() =>
+  CUSTOM_SIZES_ENABLED ? recentTemplates.value : isCustomTemplateId(props.modelValue) ? [getTemplate(props.modelValue)] : [],
+)
 
 function remember(id: string) {
   if (recent.value[0] === id) return
@@ -153,8 +167,8 @@ function onToggle(e: Event) {
 }
 
 async function openExample(ex: ExampleDef) {
-  const tp = getTemplate(ex.templateId)
-  const busy = ex.templateId === store.design.templateId ? store.design.layers.length > 0 : store.hasDraft(ex.templateId)
+  const tp = getTemplate(exampleTemplateId(ex, store.design.templateId))
+  const busy = tp.id === store.design.templateId ? store.design.layers.length > 0 : store.hasDraft(tp.id)
   if (busy) {
     const ok = await confirmDialog(t('templates.example_confirm', { template: name(tp) }), {
       confirmLabel: t('templates.example_confirm_ok'),
@@ -162,7 +176,7 @@ async function openExample(ex: ExampleDef) {
     })
     if (!ok) return
   }
-  store.loadDesign(createExample(ex, exampleTexts(), t(`templates.${ex.i18nKey}`)))
+  store.loadDesign(createExample(ex, exampleTexts(), t(`templates.${ex.i18nKey}`), tp.id))
 }
 </script>
 
@@ -178,7 +192,11 @@ async function openExample(ex: ExampleDef) {
         :aria-pressed="tp.id === props.modelValue"
         @click="emit('update:modelValue', tp.id)"
       >
-        <svg class="shape" :viewBox="viewBox(tp)" aria-hidden="true">
+        <svg v-if="tp.chipBody === 'lock'" class="shape" :viewBox="LOCK_VIEWBOX" aria-hidden="true">
+          <polygon :points="LOCK_HEAD" />
+          <circle class="seat" :r="tp.widthMm / 2" />
+        </svg>
+        <svg v-else class="shape" :viewBox="viewBox(tp)" aria-hidden="true">
           <polygon :points="points(tp)" />
         </svg>
         <span class="meta">
@@ -193,12 +211,12 @@ async function openExample(ex: ExampleDef) {
       </button>
     </div>
 
-    <div class="group">
+    <div v-if="CUSTOM_SIZES_ENABLED || customTemplates.length" class="group">
       <div class="group-title">{{ t('templates.category_custom') }}</div>
-      <template v-if="recentTemplates.length">
-        <div class="sub-title">{{ t('templates.custom_recent') }}</div>
+      <template v-if="customTemplates.length">
+        <div v-if="CUSTOM_SIZES_ENABLED" class="sub-title">{{ t('templates.custom_recent') }}</div>
         <button
-          v-for="tp in recentTemplates"
+          v-for="tp in customTemplates"
           :key="tp.id"
           class="tpl"
           :class="{ active: tp.id === props.modelValue }"
@@ -213,7 +231,7 @@ async function openExample(ex: ExampleDef) {
           </span>
         </button>
       </template>
-      <form class="custom-form" @submit.prevent="createCustom">
+      <form v-if="CUSTOM_SIZES_ENABLED" class="custom-form" @submit.prevent="createCustom">
         <label class="field">
           <span class="field-label">{{ t('templates.custom_shape') }}</span>
           <select v-model="form.shape" class="input">
@@ -312,12 +330,18 @@ async function openExample(ex: ExampleDef) {
   height: 28px;
   flex: none;
 }
-.shape polygon {
+.shape polygon,
+.shape circle {
   fill: var(--surface-3);
   stroke: var(--text-muted);
   stroke-width: 1;
+  vector-effect: non-scaling-stroke;
 }
-.tpl.active .shape polygon {
+.shape .seat {
+  fill: var(--surface-2);
+}
+.tpl.active .shape polygon,
+.tpl.active .shape circle {
   fill: var(--accent-soft);
   stroke: var(--accent-hover);
 }

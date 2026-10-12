@@ -279,15 +279,34 @@ function draw() {
   c.drawImage(lc, 0, 0)
   c.restore()
 
-  // Safe zone: band inside the cut line where content may get cut off.
+  // Safe zone: faint tint inside the cut line plus a dashed guide at its inner edge, so it
+  // reads as a helper line and not as part of the artwork. Drawn on the (already used)
+  // ghost buffer because the inner edge is cut out with destination-out.
   if (props.showSafe) {
+    const sc = ghostCanvas!.getContext('2d')!
+    const band = safeMm() * 2
+    const line = 1.5 / S
+    sc.save()
+    sc.setTransform(1, 0, 0, 1, 0, 0)
+    sc.clearRect(0, 0, ghostCanvas!.width, ghostCanvas!.height)
+    sc.setTransform(S, 0, 0, S, o.x * dpr, o.y * dpr)
+    sc.clip(shape)
+    sc.lineJoin = 'round'
+    sc.setLineDash([5 / S, 4 / S])
+    sc.lineWidth = band + line * 2
+    sc.strokeStyle = 'rgba(255, 170, 30, 0.95)'
+    sc.stroke(shape)
+    sc.setLineDash([])
+    sc.globalCompositeOperation = 'destination-out'
+    sc.lineWidth = band
+    sc.stroke(shape)
+    sc.globalCompositeOperation = 'source-over'
+    sc.strokeStyle = 'rgba(255, 170, 30, 0.14)'
+    sc.stroke(shape)
+    sc.restore()
     c.save()
-    c.setTransform(S, 0, 0, S, o.x * dpr, o.y * dpr)
-    c.clip(shape)
-    c.lineWidth = safeMm() * 2
-    c.lineJoin = 'round'
-    c.strokeStyle = 'rgba(255, 170, 30, 0.38)'
-    c.stroke(shape)
+    c.setTransform(1, 0, 0, 1, 0, 0)
+    c.drawImage(ghostCanvas!, 0, 0)
     c.restore()
   }
 

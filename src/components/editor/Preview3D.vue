@@ -10,6 +10,7 @@ import { useEditorStore } from '@/stores/editor'
 import { renderDesignCanvas } from '@/lib/render'
 import { getTemplate, type StickerTemplate } from '@/templates'
 import Icon from '@/components/common/Icon.vue'
+import { buildLockChip, LOCK_CHIP_COLOR, LOCK_CHIP_SPAN } from './lockChipModel'
 
 /**
  * Live 3D preview. The device body comes from public/models/battlepass.glb
@@ -66,6 +67,7 @@ let controls: OrbitControls
 let root: THREE.Group
 let sticker: THREE.Mesh | null = null
 let texture: THREE.CanvasTexture | null = null
+let lockChipMaterial: THREE.MeshStandardMaterial | null = null
 let anchorY = 0
 let raf = 0
 let ro: ResizeObserver | null = null
@@ -154,6 +156,7 @@ async function loadScene() {
   if (sticker) sticker.visible = false
   // Clear previous model (template switch).
   for (const child of [...root.children]) if (child !== sticker) root.remove(child)
+  lockChipMaterial = null
   if (tpl.previewModel === 'battlepass') {
     try {
       const gltf = await new GLTFLoader().loadAsync(`${import.meta.env.BASE_URL}models/battlepass.glb`)
@@ -171,6 +174,12 @@ async function loadScene() {
       root.add(fallbackBody())
       status.value = 'fallback'
     }
+  } else if (tpl.previewModel === 'chip' && tpl.chipBody === 'lock') {
+    const chip = buildLockChip(tpl.widthMm, lockChipColor.value)
+    lockChipMaterial = chip.material
+    root.add(chip.group)
+    anchorY = 0
+    status.value = 'ready'
   } else if (tpl.previewModel === 'chip') {
     // Simplified Gear Chip: a plastic disc with a raised rim, sticker in the recess.
     const r = tpl.widthMm / 2
@@ -211,8 +220,10 @@ function frameCamera() {
   const fitH = size / 2 / Math.tan(vFov / 2)
   const dist = (fitH / Math.min(1, camera.aspect)) * 1.15
   const dir = new THREE.Vector3(0.35, 0.75, 0.85).normalize()
-  camera.position.copy(dir.multiplyScalar(dist)).add(new THREE.Vector3(0, anchorY * 0.5, 0))
-  controls.target.set(0, anchorY * 0.5, 0)
+  // The Lock Chip hangs well below its sticker: aim at the middle of the part.
+  const targetY = tpl.chipBody === 'lock' ? (LOCK_CHIP_SPAN.top + LOCK_CHIP_SPAN.bottom) / 2 : anchorY * 0.5
+  camera.position.copy(dir.multiplyScalar(dist)).add(new THREE.Vector3(0, targetY, 0))
+  controls.target.set(0, targetY, 0)
   controls.update()
 }
 
@@ -354,6 +365,27 @@ watch(
 function toggleSpin() {
   spinning.value = !spinning.value
 }
+
+// Body colour of the Lock Chip model (real chips come in many colours); remembered per browser.
+const LOCK_COLOR_KEY = 'preview3d-lockchip-color'
+const isLockChip = computed(() => store.template.chipBody === 'lock')
+const lockChipColor = ref(readLockColor())
+function readLockColor(): string {
+  try {
+    const v = localStorage.getItem(LOCK_COLOR_KEY)
+    return v && /^#[0-9a-f]{6}$/i.test(v) ? v : LOCK_CHIP_COLOR
+  } catch {
+    return LOCK_CHIP_COLOR
+  }
+}
+watch(lockChipColor, (c) => {
+  lockChipMaterial?.color.set(c)
+  try {
+    localStorage.setItem(LOCK_COLOR_KEY, c)
+  } catch {
+    // ignore
+  }
+})
 </script>
 
 <template>
@@ -374,6 +406,11 @@ function toggleSpin() {
           <span class="rpm">{{ spinRpm }} rpm</span>
         </label>
       </template>
+      <label v-if="isLockChip" class="btn btn-sm body-color">
+        <span class="swatch" :style="{ background: lockChipColor }" />
+        {{ t('preview3d.body_color') }}
+        <input v-model="lockChipColor" type="color" :aria-label="t('preview3d.body_color')" />
+      </label>
       <button class="btn btn-sm" :class="{ active: spinning }" :aria-pressed="spinning" @click="toggleSpin">{{ t('preview3d.spin') }}</button>
       <button class="btn btn-sm" @click="resetCamera">{{ t('preview3d.reset') }}</button>
     </div>
@@ -431,6 +468,33 @@ function toggleSpin() {
   font-variant-numeric: tabular-nums;
   color: var(--text-muted);
   text-align: right;
+}
+.body-color {
+  position: relative;
+  cursor: pointer;
+}
+/* The native picker covers the whole button but stays invisible: the swatch shows the colour. */
+.body-color input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+.body-color:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.swatch {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  /* Light ring so dark colours (the default black) still stand out on the dark UI. */
+  box-shadow:
+    0 0 0 1.5px var(--surface),
+    0 0 0 3px var(--text-muted);
+  margin: 0 2px;
 }
 .hint {
   font-size: 11px;

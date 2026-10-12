@@ -10,5 +10,6 @@
   "enlarge": "大きく",
   "shrink": "小さく",
   "speed": "回転の速さ",
-  "direction": "回転の向きを逆にする"
+  "direction": "回転の向きを逆にする",
+  "body_color": "チップの色"
 }

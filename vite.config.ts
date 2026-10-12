@@ -32,13 +32,12 @@ export default defineConfig({
           { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
           { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
           { src: 'maskable-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
-          { src: 'favicon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
         ],
       },
       workbox: {
         // App shell, chunks, fonts (only woff2 – every supported browser uses it) and the 3D model.
         // (Manifest + icons are matched here already; the plugin adds the manifest itself.)
-        globPatterns: ['**/*.{html,js,css,svg,png,jpg,jpeg,webp,woff2,glb}'],
+        globPatterns: ['**/*.{html,js,css,svg,png,ico,jpg,jpeg,webp,woff2,glb}'],
         // three.js chunk + model are large; keep a generous headroom.
         maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
         navigateFallback: 'index.html',

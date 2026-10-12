@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { EXAMPLES, createExample, getExample } from '../examples'
+import { EXAMPLES, createExample, exampleTemplateId, getExample } from '../examples'
 import { PATTERN_IDS, getFrame, getShape } from '../library'
 import { FONTS } from '../render'
 import { sanitizeDesign } from '../projectFile'
@@ -52,6 +52,22 @@ describe('example designs', () => {
       const ids = [...a.layers, ...b.layers].map((l) => l.id)
       expect(new Set(ids).size).toBe(ids.length)
     }
+  })
+
+  it('opens Gear Chip examples on the Lock Chip (same sticker), others on their own template', () => {
+    const chip = getExample('chip-flame')!
+    expect(exampleTemplateId(chip, 'lock_chip')).toBe('lock_chip')
+    expect(exampleTemplateId(chip, 'gear_chip')).toBe('gear_chip')
+    expect(exampleTemplateId(chip, 'battlepass')).toBe('gear_chip')
+    expect(exampleTemplateId(getExample('bp-speed')!, 'lock_chip')).toBe('battlepass')
+    const own = createExample(chip, TEXTS)
+    const lock = createExample(chip, TEXTS, '', 'lock_chip')
+    expect(lock.templateId).toBe('lock_chip')
+    // Scaled down to the smaller Lock Chip sticker, still centred.
+    const f = getTemplate('lock_chip').widthMm / getTemplate('gear_chip').widthMm
+    const frameOf = (d: typeof own) => d.layers.find((l) => l.type === 'frame')!
+    expect(frameOf(lock).x).toBeCloseTo(getTemplate('lock_chip').widthMm / 2)
+    expect((frameOf(lock) as { width: number }).width).toBeCloseTo((frameOf(own) as { width: number }).width * f)
   })
 
   it('uses the given texts', () => {

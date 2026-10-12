@@ -33,6 +33,8 @@ export interface StickerTemplate {
   /** Not offered in the UI for now; designs and share links using it still open. */
   hidden?: boolean
   previewModel: PreviewModel
+  /** Body under a 'chip' sticker in the 3D preview (default 'gear'). */
+  chipBody?: 'gear' | 'lock'
   /** Recommended safe margin inside the cut line in mm (consumers default to 1.5). */
   safeMm?: number
   /** Set for user-defined sizes; the id encodes the same values. */

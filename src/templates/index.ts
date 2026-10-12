@@ -32,7 +32,23 @@ export const TEMPLATES: StickerTemplate[] = [
     outline: ellipse(17.1, 17.1, 128),
     measured: true,
     previewModel: 'chip',
-    safeMm: 1,
+    // The chip frames' colour band (and the name on it) runs to ~0.5 mm from the edge by design,
+    // and the round sticker is usually cut with a circle punch – so only a thin margin.
+    safeMm: 0.4,
+  },
+  {
+    // Lock Chip: round 16 mm sticker (≈ 15.66 mm measured, set to 16 by the user) on a 3-tab head
+    // with a hollow peg (measured 21.68 mm across, 12.48 mm tall, 8.89 mm bore). Otherwise like the Gear Chip.
+    id: 'lock_chip',
+    i18nKey: 'lock_chip',
+    category: 'bey',
+    widthMm: 16,
+    heightMm: 16,
+    outline: ellipse(16, 16, 128),
+    measured: true,
+    previewModel: 'chip',
+    chipBody: 'lock',
+    safeMm: 0.4,
   },
   {
     // Tournament name badge / player card: ISO/IEC 7810 ID-1 (credit card size),

@@ -7,6 +7,7 @@ import {
   normalizeDesign,
   imageLayerHeight,
   newDesign,
+  scaleLayers,
   uid,
   type Design,
   type FillLayer,
@@ -650,15 +651,8 @@ export const useEditorStore = defineStore('editor', () => {
     const copy = cloneDesign(design.value)
     copy.id = uid()
     copy.templateId = to.id
-    const f = Math.min(to.widthMm / from.widthMm, to.heightMm / from.heightMm)
-    for (const l of copy.layers) {
-      l.id = uid()
-      if (l.type === 'fill') continue
-      l.x = (l.x / from.widthMm) * to.widthMm
-      l.y = (l.y / from.heightMm) * to.heightMm
-      if (l.type === 'text') l.fontSize *= f
-      else l.width *= f
-    }
+    for (const l of copy.layers) l.id = uid()
+    scaleLayers(copy.layers, from, to)
     stashCurrent()
     activate({ design: copy, selectedIds: [], undo: [], redo: [] })
     commit()

@@ -39,7 +39,10 @@ function initialLocale(): Locale {
   } catch {
     // storage blocked (private mode) – fall through to browser language
   }
-  for (const lang of navigator.languages ?? [navigator.language]) {
+  // Some privacy modes report an empty list; navigator.language is still set there.
+  const preferred = navigator.languages?.length ? navigator.languages : [navigator.language]
+  for (const lang of preferred) {
+    if (!lang) continue
     const base = lang.toLowerCase().split('-')[0]
     if (isLocale(base)) return base
   }

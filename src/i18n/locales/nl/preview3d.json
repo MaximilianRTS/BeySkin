@@ -10,5 +10,6 @@
   "enlarge": "Vergroten",
   "shrink": "Verkleinen",
   "speed": "Draaisnelheid",
-  "direction": "Draairichting omkeren"
+  "direction": "Draairichting omkeren",
+  "body_color": "Kleur van de chip"
 }

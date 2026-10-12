@@ -55,7 +55,7 @@ describe('templates', () => {
       expect(safe).toBeGreaterThan(0)
       expect(safe * 2).toBeLessThan(Math.min(t.widthMm, t.heightMm))
     }
-    expect(getTemplate('gear_chip').safeMm).toBe(1)
+    expect(getTemplate('gear_chip').safeMm).toBe(0.4)
     expect(getTemplate('player_card').safeMm).toBe(2)
   })
 
